@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% with placeholder_img="images/listing-avatar.svg" %}
+{% url 'home' as home_url %}
+
+{% block extra_title %}- Listings{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block page_header %}
+  <div class="container header-container">
+    <div class="row">
+      <div class="col"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="listings-app">
+    <main class="page-shell">
+      <section class="search-shell">
+        {% include 'partials/search_form.html' %}
+      </section>
+
+      <section class="results-section">
+        <div class="section-title-wrap">
+          <h2>Results</h2>
+        </div>
+
+        <div class="cards-grid">
+          {% for listing in listings %}
+            <article class="listing-card" data-search-term="{{ listing.car_make }} {{ listing.car_model }} {{ listing.fuel_type }} {{ listing.year }}">
+              <div class="listing-image-box">
+                <a href="{{ home_url }}" aria-label="Go to home page">
+                  <img src="{{ listing.primary_image_url }}" alt="Car image for {{ listing.car_make }} {{ listing.car_model }}">
+                </a>
+              </div>
+
+              <div class="listing-card-body">
+                <h3>
+                  {{ listing.car_make }} {{ listing.car_model }}
+                  {% if listing.is_approved %}
+                    <span class="approval-badge">Approved</span>
+                  {% endif %}
+                </h3>
+                <p><strong>Fuel Type:</strong> {{ listing.fuel_type|default:'-' }}</p>
+                <p><strong>Year:</strong> {{ listing.year|default:'-' }}</p>
+                <p><strong>Mileage:</strong> {{ listing.mileage|default:'-' }}</p>
+                <p><strong>Price:</strong> €{{ listing.price|default:'-' }}</p>
+
+                <!-- View / Edit / Delete action buttons -->
+                <div class="listing-card-actions">
+                  <button
+                    type="button"
+                    class="btn-pill btn-pill-view"
+                    data-toggle="modal"
+                    data-target="#listingModal-{{ listing.id }}"
+                    aria-label="View full details for {{ listing.car_make }} {{ listing.car_model }}">
+                    View
+                  </button>
+                  {% if request.user.is_authenticated %}
+                    {% if listing.owner and listing.owner.user == request.user %}
+                      <a href="{% url 'edit_listing' listing.id %}" class="btn-pill btn-pill-edit">Edit</a>
+                      <a href="{% url 'delete_listing' listing.id %}" class="btn-pill btn-pill-delete">Delete</a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+              </div>
+            </article>
+
+            <!-- Listing details modal -->
+            <div class="modal fade vehicle-modal" id="listingModal-{{ listing.id }}" tabindex="-1" role="dialog" aria-labelledby="listingModalLabel-{{ listing.id }}" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header vehicle-modal-header">
+                    <h5 class="modal-title" id="listingModalLabel-{{ listing.id }}">
+                      {{ listing.car_make }} {{ listing.car_model }}
+                      {% if listing.is_approved %}
+                        <span class="approval-badge">Approved</span>
+                      {% endif %}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <div class="modal-body vehicle-modal-body">
+                    <div class="vehicle-modal-image-wrap">
+                      <img src="{{ listing.primary_image_url }}" alt="{{ listing.car_make }} {{ listing.car_model }}">
+                    </div>
+
+                    <div class="vehicle-modal-grid">
+                      <p><strong>Make:</strong> {{ listing.car_make|default:'-' }}</p>
+                      <p><strong>Model:</strong> {{ listing.car_model|default:'-' }}</p>
+                      <p><strong>Fuel Type:</strong> {{ listing.fuel_type|default:'-' }}</p>
+                      <p><strong>Year:</strong> {{ listing.year|default:'-' }}</p>
+                      <p><strong>Mileage:</strong> {{ listing.mileage|default:'-' }}</p>
+                      <p><strong>Price:</strong> €{{ listing.price|default:'-' }}</p>
+                      <p><strong>Engine Size:</strong> {{ listing.engine_size|default:'-' }}</p>
+                      <p><strong>Transmission:</strong> {{ listing.transmission|default:'-' }}</p>
+                      <p><strong>Seats:</strong> {{ listing.seats|default:'-' }}</p>
+                      <p><strong>Torque:</strong> {{ listing.torque|default:'-' }}</p>
+                      <p><strong>Posted:</strong> {{ listing.created|date:'M d, Y H:i'|default:'-' }}</p>
+                      <p><strong>Seller:</strong> {% if listing.owner %}{{ listing.owner.name|default:listing.owner.username }}{% else %}-{% endif %}</p>
+                    </div>
+
+                    <div class="vehicle-modal-description">
+                      <strong>Description</strong>
+                      <p>{{ listing.description|default:'No description provided.' }}</p>
+                    </div>
+                  </div>
+
+                  <div class="modal-footer vehicle-modal-footer">
+                    {% if request.user.is_authenticated %}
+                      {% if listing.id in selected_vehicle_ids %}
+                        <form method="post" action="{% url 'unselect_vehicle' listing.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                          <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
+                        </form>
+                      {% else %}
+                        <form method="post" action="{% url 'select_vehicle' listing.id %}">
+                          {% csrf_token %}
+                          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                          <button type="submit" class="btn-pill btn-pill-save">Select Car</button>
+                        </form>
+                      {% endif %}
+                    {% else %}
+                      <a href="{% url 'login' %}" class="btn-pill btn-pill-view">Login to Select</a>
+                    {% endif %}
+                    <button type="button" class="btn-pill btn-pill-cancel" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <div class="empty-state">
+              <p>No cars matched the values entered in the form.</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div id="navbar-search-empty" class="empty-state d-none">
+          <p>No cars match your search term.</p>
+        </div>
+
+        {% if listings.paginator.num_pages > 1 %}
+          <nav class="pagination-wrap" aria-label="Listings pagination">
+            <div class="pagination-list">
+              {% if listings.has_previous %}
+                <div><a href="?page={{ listings.previous_page_number }}&car_make={{ values.car_make|urlencode }}&car_model={{ values.car_model|urlencode }}&fuel_type={{ values.fuel_type|urlencode }}&year={{ values.year|urlencode }}&mileage={{ values.mileage|urlencode }}&price={{ values.price|urlencode }}">&laquo;</a></div>
+              {% else %}
+                <div class="disabled"><span>&laquo;</span></div>
+              {% endif %}
+
+              {% for i in listings.paginator.page_range %}
+                {% if i == listings.number %}
+                  <div class="active"><span>{{ i }}</span></div>
+                {% else %}
+                  <div><a href="?page={{ i }}&car_make={{ values.car_make|urlencode }}&car_model={{ values.car_model|urlencode }}&fuel_type={{ values.fuel_type|urlencode }}&year={{ values.year|urlencode }}&mileage={{ values.mileage|urlencode }}&price={{ values.price|urlencode }}">{{ i }}</a></div>
+                {% endif %}
+              {% endfor %}
+
+              {% if listings.has_next %}
+                <div><a href="?page={{ listings.next_page_number }}&car_make={{ values.car_make|urlencode }}&car_model={{ values.car_model|urlencode }}&fuel_type={{ values.fuel_type|urlencode }}&year={{ values.year|urlencode }}&mileage={{ values.mileage|urlencode }}&price={{ values.price|urlencode }}">&raquo;</a></div>
+              {% else %}
+                <div class="disabled"><span>&raquo;</span></div>
+              {% endif %}
+            </div>
+          </nav>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+{% endblock %}
+
+{% endwith %}
+
+{% block postloadjs %}
+  {{ block.super }}
+  <script>
+    (function () {
+      const searchInputs = document.querySelectorAll('.js-navbar-search');
+      const cards = Array.from(document.querySelectorAll('.listing-card'));
+      const emptyState = document.getElementById('navbar-search-empty');
+
+      if (!searchInputs.length || !cards.length) {
+        return;
+      }
+
+      const filterCards = () => {
+        const term = Array.from(searchInputs)
+          .find((input) => input && input.value !== undefined)?.value.trim().toLowerCase() || '';
+
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const haystack = (card.dataset.searchTerm || '').toLowerCase();
+          const matches = !term || haystack.includes(term);
+          card.style.display = matches ? '' : 'none';
+          if (matches) visibleCount += 1;
+        });
+
+        if (emptyState) {
+          emptyState.classList.toggle('d-none', visibleCount > 0);
+        }
+      };
+
+      searchInputs.forEach((input) => {
+        input.addEventListener('input', filterCards);
+      });
+
+      filterCards();
+    })();
+  </script>
+{% endblock %}

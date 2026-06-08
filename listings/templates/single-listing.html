@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% with placeholder_img="images/listing-placeholder.svg" %}
+
+{% block extra_title %}- {{ listing.car_make }} {{ listing.car_model }}{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block page_header %}
+  <div class="container header-container">
+    <div class="row"><div class="col"></div></div>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="listings-app">
+  <main class="page-shell">
+    <div class="form-card" style="max-width:800px; margin:2rem auto;">
+
+      <div class="form-card-head">
+        <h1>{{ listing.car_make }} {{ listing.car_model }}</h1>
+        <a class="back-link" href="{% url 'listings_page' %}">Back to Listings</a>
+      </div>
+
+      <!-- Listing image -->
+      <div style="margin:1rem 0;">
+        <img
+          src="{{ listing.primary_image_url }}"
+          alt="{{ listing.car_make }} {{ listing.car_model }}"
+          style="width:100%; max-height:400px; object-fit:cover; border-radius:8px;">
+      </div>
+
+      <!-- Listing details -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1.5rem 0;">
+        <p><strong>Make:</strong> {{ listing.car_make|default:'-' }}</p>
+        <p><strong>Model:</strong> {{ listing.car_model|default:'-' }}</p>
+        <p><strong>Year:</strong> {{ listing.year|default:'-' }}</p>
+        <p><strong>Fuel Type:</strong> {{ listing.fuel_type|default:'-' }}</p>
+        <p><strong>Mileage:</strong> {{ listing.mileage|default:'-' }} miles</p>
+        <p><strong>Price:</strong> €{{ listing.price|default:'-' }}</p>
+        <p><strong>Engine Size:</strong> {{ listing.engine_size|default:'-' }}</p>
+        <p><strong>Transmission:</strong> {{ listing.transmission|default:'-' }}</p>
+        <p><strong>Seats:</strong> {{ listing.seats|default:'-' }}</p>
+        <p><strong>Torque:</strong> {{ listing.torque|default:'-' }}</p>
+      </div>
+
+      {% if listing.description %}
+        <div style="margin:1rem 0;">
+          <strong>Description:</strong>
+          <p>{{ listing.description }}</p>
+        </div>
+      {% endif %}
+
+      <!-- Seller info -->
+      {% if listing.owner %}
+        <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-top:1.5rem;">
+          <strong>Seller:</strong> {{ listing.owner.name|default:listing.owner.username }}
+          {% if listing.owner.email %}
+            &nbsp;&mdash;&nbsp;{{ listing.owner.email }}
+          {% endif %}
+          {% if listing.owner.phone %}
+            &nbsp;&mdash;&nbsp;{{ listing.owner.phone }}
+          {% endif %}
+        </div>
+      {% endif %}
+
+            {% if request.user.is_authenticated %}
+                <div class="listing-card-actions">
+                    {% if listing.id in selected_vehicle_ids %}
+                        <form method="post" action="{% url 'unselect_vehicle' listing.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'select_vehicle' listing.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <button type="submit" class="btn-pill btn-pill-save">Select Car</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+      <!-- Edit / Delete: only visible to the listing owner -->
+      {% if request.user.is_authenticated %}
+        {% if listing.owner and listing.owner.user == request.user %}
+          <div class="listing-card-actions">
+            <a href="{% url 'edit_listing' listing.id %}" class="btn-pill btn-pill-edit">✏️ Edit Listing</a>
+            <a href="{% url 'delete_listing' listing.id %}" class="btn-pill btn-pill-delete">🗑 Delete Listing</a>
+          </div>
+        {% endif %}
+      {% endif %}
+
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% endwith %}

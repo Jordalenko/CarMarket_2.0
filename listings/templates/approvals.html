@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% with placeholder_img="images/listing-placeholder.svg" %}
+
+{% block extra_title %}- Approvals{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block page_header %}
+  <div class="container header-container">
+    <div class="row">
+      <div class="col"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="listings-app">
+    <main class="page-shell">
+      <section class="results-section">
+        <div class="section-title-wrap">
+          <h2>Approvals</h2>
+          <p class="mb-0">User submissions waiting for review.</p>
+        </div>
+
+        <div class="cards-grid">
+          {% for listing in pending_listings %}
+            <article class="listing-card">
+              <div class="listing-image-box">
+                <a href="{% url 'single_listing' listing.id %}" aria-label="View {{ listing.car_make }} {{ listing.car_model }}">
+                  <img src="{{ listing.primary_image_url }}" alt="{{ listing.car_make }} {{ listing.car_model }}">
+                </a>
+              </div>
+
+              <div class="listing-card-body">
+                <h3>{{ listing.car_make }} {{ listing.car_model }}</h3>
+                <p><strong>Submitted by:</strong>
+                  {% if listing.owner %}
+                    {{ listing.owner.username|default:listing.owner.user.username }}
+                  {% else %}
+                    Unknown User
+                  {% endif %}
+                </p>
+                <p><strong>Fuel Type:</strong> {{ listing.fuel_type|default:'-' }}</p>
+                <p><strong>Year:</strong> {{ listing.year|default:'-' }}</p>
+                <p><strong>Mileage:</strong> {{ listing.mileage|default:'-' }}</p>
+                <p><strong>Price:</strong> €{{ listing.price|default:'-' }}</p>
+
+                <div class="listing-card-actions">
+                  <a href="{% url 'review_submission' listing.id %}" class="btn-pill btn-pill-view">View</a>
+                  <form method="post" action="{% url 'reject_submission' listing.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-pill btn-pill-delete">Reject</button>
+                  </form>
+                </div>
+              </div>
+            </article>
+          {% empty %}
+            <div class="empty-state">
+              <p>There are no user submissions waiting for approval.</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if pending_listings.paginator.num_pages > 1 %}
+          <nav class="pagination-wrap" aria-label="Approvals pagination">
+            <div class="pagination-list">
+              {% if pending_listings.has_previous %}
+                <div><a href="?page={{ pending_listings.previous_page_number }}">&laquo;</a></div>
+              {% else %}
+                <div class="disabled"><span>&laquo;</span></div>
+              {% endif %}
+
+              {% for i in pending_listings.paginator.page_range %}
+                {% if i == pending_listings.number %}
+                  <div class="active"><span>{{ i }}</span></div>
+                {% else %}
+                  <div><a href="?page={{ i }}">{{ i }}</a></div>
+                {% endif %}
+              {% endfor %}
+
+              {% if pending_listings.has_next %}
+                <div><a href="?page={{ pending_listings.next_page_number }}">&raquo;</a></div>
+              {% else %}
+                <div class="disabled"><span>&raquo;</span></div>
+              {% endif %}
+            </div>
+          </nav>
+        {% endif %}
+      </section>
+    </main>
+  </div>
+{% endblock %}
+
+{% endwith %}
