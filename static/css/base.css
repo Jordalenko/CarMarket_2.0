@@ -94,6 +94,35 @@ body {
     z-index: 1;
 }
 
+/* ---- Navbar dropdown menus ---- */
+.dropdown-menu {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.32) !important;
+    backdrop-filter: blur(10px);
+    padding: 6px !important;
+    min-width: 170px;
+}
+
+.dropdown-menu .dropdown-item {
+    color: rgba(255, 255, 255, 0.88) !important;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #fff !important;
+}
+
+.dropdown-menu .badge {
+    vertical-align: middle;
+}
+
 .border-black {
     border: 1px solid black !important;
 }

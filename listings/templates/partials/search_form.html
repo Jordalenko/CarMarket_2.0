@@ -18,16 +18,24 @@
       </select>
     </div>
     <div class="search-item">
-      <label for="year" class="sr-only">Year</label>
-      <input id="year" name="year" type="number" placeholder="Year" value="{{ values.year|default:'' }}">
+      <label for="year_from" class="sr-only">From year</label>
+      <input id="year_from" name="year_from" type="number" placeholder="From Year" value="{{ values.year_from|default:'' }}">
+    </div>
+    <div class="search-item">
+      <label for="year_to" class="sr-only">To year</label>
+      <input id="year_to" name="year_to" type="number" placeholder="To Year" value="{{ values.year_to|default:'' }}">
     </div>
     <div class="search-item">
       <label for="mileage" class="sr-only">Mileage</label>
       <input id="mileage" name="mileage" type="number" placeholder="Mileage" value="{{ values.mileage|default:'' }}">
     </div>
     <div class="search-item">
-      <label for="price" class="sr-only">Price</label>
-      <input id="price" name="price" type="number" placeholder="Price" value="{{ values.price|default:'' }}">
+      <label for="price_min" class="sr-only">Minimum price</label>
+      <input id="price_min" name="price_min" type="number" placeholder="Min. Price" value="{{ values.price_min|default:'' }}">
+    </div>
+    <div class="search-item">
+      <label for="price_max" class="sr-only">Maximum price</label>
+      <input id="price_max" name="price_max" type="number" placeholder="Max. Price" value="{{ values.price_max|default:'' }}">
     </div>
     <div class="search-item search-actions">
       <button type="submit">Search</button>

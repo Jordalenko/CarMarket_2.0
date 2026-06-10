@@ -37,8 +37,8 @@
     </a>
     <div class="dropdown-menu border-0" aria-labelledby="user-options">
         {% if request.user.is_authenticated %}
-            {% if request.user.is_superuser %}
-                <a href="{% url 'logout' %}" class="dropdown-item">Product Management</a>
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <a href="{% url 'approvals_page' %}" class="dropdown-item">New Submissions</a>
             {% endif %}
             <a href="{% url 'profile' %}" class="dropdown-item">My Profile</a>
             <a href="{% url 'inbox' %}" class="dropdown-item">Inbox{% if inbox_unread_count %} <span class="badge badge-pill badge-danger ml-1">{{ inbox_unread_count }}</span>{% endif %}</a>
