@@ -7,6 +7,7 @@
     </a>
     <div class="dropdown-menu border-0 w-100 p-3 rounded-0 my-0" aria-labelledby="mobile-search">
         <form class="form" method="GET" action="{% url 'listings_page' %}">
+            <input type="hidden" name="vehicle_segment" value="{{ request.GET.vehicle_segment|default:'all' }}">
             <div class="input-group w-100">
                 <input class="form-control border border-black rounded-0 js-navbar-search" id="mobile-navbar-search-input" type="text" name="q" placeholder="Search car brand or model" value="{{ request.GET.q|default:'' }}">
                 <div class="input-group-append">
@@ -35,7 +36,7 @@
             </p>
         </div>
     </a>
-    <div class="dropdown-menu border-0" aria-labelledby="user-options">
+    <div class="dropdown-menu border-0 account-dropdown-menu" aria-labelledby="user-options">
         {% if request.user.is_authenticated %}
             {% if request.user.is_staff or request.user.is_superuser %}
                 <a href="{% url 'approvals_page' %}" class="dropdown-item">New Submissions</a>

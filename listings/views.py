@@ -36,7 +36,6 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -115,8 +114,6 @@ def _apply_listing_fields(listing: Listing, data: Dict[str, Any], files, *, keep
     listing.torque = _parse_torque_int(data.get("torque"))
     car_type_name = (data.get("car_type") or "").strip()
     listing.car_type = CarType.objects.filter(name__iexact=car_type_name).first() if car_type_name else None
-    if not listing.created:
-        listing.created = timezone.now()
 
     for field_name in IMAGE_FIELDS:
         current_value = getattr(listing, field_name)
@@ -277,27 +274,31 @@ def _filtered_listings(request):
         "car_make",
         "car_model",
         "car_type",
-    ).filter(is_approved=True).order_by("-created", "-id")
+    ).filter(is_approved=True)
 
     q = (request.GET.get("q") or "").strip()
     car_make = (request.GET.get("car_make") or "").strip()
     car_model = (request.GET.get("car_model") or "").strip()
     fuel_type = (request.GET.get("fuel_type") or "").strip()
+    transmission = (request.GET.get("transmission") or "").strip()
     year_from = (request.GET.get("year_from") or "").strip()
     year_to = (request.GET.get("year_to") or "").strip()
-    mileage = (request.GET.get("mileage") or "").strip()
+    legacy_year = (request.GET.get("year") or "").strip()
+    mileage_min = (request.GET.get("mileage_min") or "").strip()
+    mileage_max = (request.GET.get("mileage_max") or "").strip()
+    legacy_mileage = (request.GET.get("mileage") or "").strip()
     price_min = (request.GET.get("price_min") or "").strip()
     price_max = (request.GET.get("price_max") or "").strip()
-    vehicle_segment = (request.GET.get("vehicle_segment") or "").strip().lower()
-    sort = (request.GET.get("sort") or "").strip().lower()
-
-    # Backward compatibility with old query params
-    legacy_year = (request.GET.get("year") or "").strip()
     legacy_price = (request.GET.get("price") or "").strip()
+    vehicle_segment = (request.GET.get("vehicle_segment") or "all").strip().lower()
+    sort = (request.GET.get("sort") or "car_make").strip().lower()
+
     if legacy_year and not year_from and not year_to:
         year_from = legacy_year
         year_to = legacy_year
-    if legacy_price and not price_max:
+    if legacy_mileage and not mileage_min and not mileage_max:
+        mileage_max = legacy_mileage
+    if legacy_price and not price_min and not price_max:
         price_max = legacy_price
 
     if q:
@@ -311,21 +312,48 @@ def _filtered_listings(request):
         queryset = queryset.filter(car_model__name__icontains=car_model)
     if fuel_type:
         queryset = queryset.filter(fuel_type__iexact=fuel_type)
+    if transmission:
+        queryset = queryset.filter(transmission__iexact=transmission)
     if year_from:
         queryset = queryset.filter(year__gte=year_from)
     if year_to:
         queryset = queryset.filter(year__lte=year_to)
-    if mileage:
-        queryset = queryset.filter(mileage__lte=mileage)
+    if mileage_min:
+        queryset = queryset.filter(mileage__gte=mileage_min)
+    if mileage_max:
+        queryset = queryset.filter(mileage__lte=mileage_max)
     if price_min:
         queryset = queryset.filter(price__gte=price_min)
     if price_max:
         queryset = queryset.filter(price__lte=price_max)
 
     if vehicle_segment == "suvs":
-        queryset = queryset.filter(car_type__name__iexact="SUV")
+        queryset = queryset.filter(
+            Q(car_type__name__in=["SUV", "Pickup Truck", "Crossover"])
+            | Q(car_model__name__icontains="suv")
+            | Q(car_model__name__icontains="truck")
+            | Q(car_model__name__icontains="awd")
+            | Q(description__icontains="suv")
+            | Q(description__icontains="truck")
+            | Q(description__icontains="awd")
+        )
     elif vehicle_segment == "cars":
-        queryset = queryset.exclude(car_type__name__iexact="SUV")
+        queryset = queryset.filter(
+            Q(car_type__name__in=[
+                "Sedan",
+                "Coupe",
+                "Hatchback",
+                "Wagon",
+                "Convertible",
+                "Sports Car",
+            ])
+            | (
+                Q(car_type__isnull=True)
+                & ~Q(car_model__name__icontains="suv")
+                & ~Q(car_model__name__icontains="truck")
+                & ~Q(car_model__name__icontains="awd")
+            )
+        )
 
     if sort == "price":
         queryset = queryset.order_by("price", "-created", "-id")
@@ -333,6 +361,8 @@ def _filtered_listings(request):
         queryset = queryset.order_by("-year", "-created", "-id")
     elif sort == "date_added":
         queryset = queryset.order_by("-created", "-id")
+    else:
+        queryset = queryset.order_by("car_make__name", "car_model__name", "-created", "-id")
 
     return queryset
 
@@ -402,11 +432,23 @@ def listings_page(request):
         .order_by("fuel_type")
     )
 
+    transmission_types = list(
+        TransmissionType.objects.values_list("name", flat=True).order_by("name")
+    )
+    if not transmission_types:
+        transmission_types = list(
+            Listing.objects.exclude(transmission="")
+            .values_list("transmission", flat=True)
+            .distinct()
+            .order_by("transmission")
+        )
+
     context = {
         "listings": listings,
         "values": request.GET,
         "fuel_types": fuel_types,
-        "sort": (request.GET.get("sort") or "date_added").strip().lower(),
+        "transmission_types": transmission_types,
+        "sort": (request.GET.get("sort") or "car_make").strip().lower(),
         "vehicle_segment": (request.GET.get("vehicle_segment") or "all").strip().lower(),
     }
     return render(request, "listings.html", context)
@@ -442,10 +484,7 @@ def create_listing_form(request):
         ):
             listing_id = payload.get("listing", {}).get("id")
             if listing_id:
-                Listing.objects.filter(pk=listing_id).update(
-                    is_approved=True,
-                    approved_at=timezone.now(),
-                )
+                Listing.objects.filter(pk=listing_id).update(is_approved=True)
 
         context = {
             "result": payload,
@@ -549,7 +588,6 @@ def edit_listing(request, listing_id):
         data = request.POST.dict()
         _apply_listing_fields(listing, data, request.FILES, keep_existing_images=True)
         listing.is_approved = False
-        listing.approved_at = None
         listing.save()
 
         messages.success(
@@ -595,7 +633,6 @@ def review_submission(request, listing_id):
         data = request.POST.dict()
         _apply_listing_fields(listing, data, request.FILES, keep_existing_images=True)
         listing.is_approved = request.POST.get("approve_listing") == "on"
-        listing.approved_at = timezone.now() if listing.is_approved else None
         listing.save()
 
         if listing.is_approved:
@@ -767,8 +804,7 @@ def approve_submission(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
     _attach_primary_image_url(listing)
     listing.is_approved = True
-    listing.approved_at = timezone.now()
-    listing.save(update_fields=["is_approved", "approved_at"])
+    listing.save(update_fields=["is_approved"])
     _send_submission_notification(listing, "approved")
     messages.success(request, "Submission approved successfully.")
     return redirect("approvals_page")

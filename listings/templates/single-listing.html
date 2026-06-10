@@ -60,8 +60,10 @@
       <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-top:1.5rem;">
         {% if listing.is_approved %}
           <strong>Seller:</strong> Backyard CarMarket
+        {% elif listing.owner %}
+          <strong>Seller:</strong> {{ listing.owner.username }}
         {% else %}
-          <strong>Seller:</strong> {{ listing.owner.username|default:'Unknown' }} <em class="text-muted">(pending approval)</em>
+          <strong>Seller:</strong> -
         {% endif %}
       </div>
 

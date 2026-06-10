@@ -82,7 +82,6 @@ class Listing(models.Model):
     engine_size = models.CharField(max_length=20, blank=True, default="")
     transmission = models.CharField(max_length=100, blank=True, default="")
     created = models.DateTimeField(null=True, blank=True)
-    approved_at = models.DateTimeField(null=True, blank=True)
     description = models.TextField(blank=True, default="")
     price = models.IntegerField(null=True, blank=True)
     fuel_type = models.CharField(max_length=100, blank=True, default="")

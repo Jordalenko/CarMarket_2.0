@@ -6,9 +6,8 @@
 .listings-app {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: transparent;
+  background: #f4f6f9;
   color: #1f2937;
-  font-size: clamp(14px, 1.8vw, 16px);
 }
 
 .listings-app .top-bar,
@@ -22,10 +21,6 @@
   max-width: 1180px;
   margin: 0 auto;
   padding: 34px 20px 56px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 18px;
-  backdrop-filter: blur(4px);
 }
 
 .listings-app .search-shell {
@@ -36,16 +31,25 @@
 .listings-app .search-panel {
   width: 100%;
   max-width: 830px;
-  background: rgba(15, 23, 42, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #5a8fc7;
+  border: 2px solid #456f9a;
   padding: 18px;
-  border-radius: 14px;
 }
 
 .listings-app .search-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
+}
+
+.listings-app .search-toggle-btn {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #12497f;
+  background: #12497f;
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 12px;
 }
 
 .listings-app .search-item input,
@@ -58,9 +62,8 @@
   min-height: 44px;
   padding: 10px 12px;
   border: 1px solid #cfd4dc;
-  background: rgba(255, 255, 255, 0.95);
+  background: #fff;
   font-size: 15px;
-  border-radius: 10px;
 }
 
 .listings-app .search-actions button,
@@ -82,26 +85,8 @@
 }
 
 .listings-app .section-title-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
+  text-align: center;
   margin: 36px 0 24px;
-}
-
-.listings-app .section-title-wrap h2 {
-  margin: 0;
-}
-
-.listings-app .sort-form {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.listings-app .sort-form select {
-  min-width: 140px;
 }
 
 .listings-app .cards-grid {
@@ -235,11 +220,9 @@
 .listings-app .form-card {
   max-width: 920px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: #fff;
+  border: 1px solid #d7dee6;
   padding: 24px;
-  border-radius: 16px;
-  backdrop-filter: blur(4px);
 }
 
 .listings-app .form-card-head {
@@ -445,15 +428,6 @@
 }
 
 @media (max-width: 900px) {
-  .listings-app .page-shell {
-    padding: 26px 16px 42px;
-  }
-
-  .listings-app .section-title-wrap {
-    justify-content: center;
-    text-align: center;
-  }
-
   .listings-app .cards-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -465,66 +439,22 @@
 
 @media (max-width: 640px) {
   .listings-app .page-shell {
-    padding: 18px 12px 30px;
+    padding: 24px 14px 36px;
   }
 
   .listings-app .search-panel {
-    max-width: 100%;
-    padding: 14px;
+    max-width: 320px;
+    padding: 16px;
+  }
+
+  .listings-app #mobileSearchFilters {
+    margin-top: 6px;
   }
 
   .listings-app .search-grid,
   .listings-app .cards-grid,
   .listings-app .create-listing-grid {
     grid-template-columns: 1fr;
-  }
-
-  .listings-app .search-item input,
-  .listings-app .search-item select,
-  .listings-app .search-actions button,
-  .listings-app .search-actions a {
-    min-height: 42px;
-    font-size: 14px;
-  }
-
-  .listings-app .listing-card {
-    padding: 12px;
-    min-height: auto;
-  }
-
-  .listings-app .listing-card-body h3 {
-    font-size: 16px;
-  }
-
-  .listings-app .listing-card-body p {
-    font-size: 14px;
-  }
-
-  .listings-app .btn-pill {
-    width: 100%;
-    min-height: 40px;
-    font-size: 13px;
-  }
-
-  .listing-card-actions {
-    flex-direction: column;
-  }
-
-  .listings-app .sort-form {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .listings-app .sort-form label {
-    width: 100%;
-    text-align: center;
-    margin: 0;
-  }
-
-  .listings-app .sort-form select {
-    width: 100%;
-    max-width: 280px;
   }
 
   .listings-app .form-card-head {
@@ -534,5 +464,11 @@
 
   .vehicle-modal-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .listings-app #mobileSearchFilters {
+    display: block !important;
   }
 }
