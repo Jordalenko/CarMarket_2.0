@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'car-market-2-0-88117026bcc0.herokuapp.com',
+    'http://car-market-2-0-88117026bcc0.herokuapp.com/',
     '127.0.0.1',
     'localhost',]
 
