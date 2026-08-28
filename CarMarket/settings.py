@@ -14,8 +14,8 @@ import os
 from pathlib import Path
 import dj_database_url
 
-# if os.path.isfile("env.py"):
-#     import env
+if os.path.isfile("env.py"):
+    import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,10 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = (
-    "django-insecure-xv$t2u+yq5tuoz0ou8wdc$0d%u0xua+x44f&hj$^y5j&"
-    "vz(elq"
-)
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECRET_KEY = os.environ.get("SECRET_KEY")
 
@@ -37,7 +34,8 @@ SECRET_KEY = (
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    # '.herokuapp.com',
+    '.herokuapp.com'
+    'car-market-2-0-88117026bcc0.herokuapp.com',
     '127.0.0.1',
     'localhost',]
 
@@ -123,13 +121,17 @@ WSGI_APPLICATION = 'CarMarket.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=not DEBUG,
-    )
-}
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+    }
+else: 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
