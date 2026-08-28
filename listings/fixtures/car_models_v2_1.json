@@ -1,0 +1,90 @@
+[
+  {
+    "model": "listings.carmodel",
+    "pk": 1,
+    "fields": {
+      "name": "128i",
+      "car_make": 1
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 2,
+    "fields": {
+      "name": "240Z",
+      "car_make": 2
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 3,
+    "fields": {
+      "name": "Bronco",
+      "car_make": 3
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 4,
+    "fields": {
+      "name": "Element",
+      "car_make": 4
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 5,
+    "fields": {
+      "name": "Mazda3 Sport GT",
+      "car_make": 5
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 6,
+    "fields": {
+      "name": "Cooper S",
+      "car_make": 6
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 7,
+    "fields": {
+      "name": "Juke",
+      "car_make": 7
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 8,
+    "fields": {
+      "name": "Leaf",
+      "car_make": 7
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 9,
+    "fields": {
+      "name": "Model 3",
+      "car_make": 8
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 10,
+    "fields": {
+      "name": "RAV4",
+      "car_make": 9
+    }
+  },
+  {
+    "model": "listings.carmodel",
+    "pk": 11,
+    "fields": {
+      "name": "Jetta",
+      "car_make": 10
+    }
+  }
+]

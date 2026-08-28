@@ -25,6 +25,7 @@
 import json
 import os
 import uuid
+from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from django.conf import settings
@@ -69,19 +70,22 @@ def _store_uploaded_image(uploaded_file) -> Optional[str]:
 def _listing_image_url(image_name: Optional[str]) -> str:
     if image_name:
         normalized = str(image_name).strip()
+
         if normalized and normalized not in {
             "listings/default-listing-img.jpg",
             "Placeholder_00001.jpg",
         }:
-            candidate = os.path.join(settings.MEDIA_ROOT, normalized)
-            if os.path.exists(candidate):
-                return f"{settings.MEDIA_URL}{normalized}"
+            return f"{settings.MEDIA_URL}{normalized}"
 
     return f"{settings.MEDIA_URL}{PLACEHOLDER_IMAGE}"
 
 
-def _attach_primary_image_url(listing: Listing) -> Listing:
-    listing.primary_image_url = _listing_image_url(listing.listing_image_1)
+def _attach_listing_image_urls(listing: Listing) -> Listing:
+    listing.image_urls = [
+        _listing_image_url(getattr(listing, field_name))
+        for field_name in IMAGE_FIELDS
+    ]
+    listing.primary_image_url = listing.image_urls[0]
     return listing
 
 
@@ -116,6 +120,10 @@ def _apply_listing_fields(listing: Listing, data: Dict[str, Any], files, *, keep
     listing.car_type = CarType.objects.filter(name__iexact=car_type_name).first() if car_type_name else None
 
     for field_name in IMAGE_FIELDS:
+        if str(data.get(f"delete_{field_name}") or "").lower() in {"1", "true", "yes", "on"}:
+            setattr(listing, field_name, "listings/default-listing-img.jpg")
+            continue
+
         current_value = getattr(listing, field_name)
         if keep_existing_images:
             new_value = _resolve_listing_image(data, files, field_name, current_value)
@@ -327,9 +335,26 @@ def _filtered_listings(request):
     if price_max:
         queryset = queryset.filter(price__lte=price_max)
 
+    known_suvs = (
+        Q(
+            car_make__name__iexact="Toyota",
+            car_model__name__iexact="RAV4",
+            year__in=[1998, 2001],
+        )
+        | Q(
+            car_make__name__iexact="Honda",
+            car_model__name__iexact="Element",
+        )
+        | Q(
+            car_make__name__iexact="Ford",
+            car_model__name__iexact="Bronco",
+        )
+    )
+
     if vehicle_segment == "suvs":
         queryset = queryset.filter(
-            Q(car_type__name__in=["SUV", "Pickup Truck", "Crossover"])
+            known_suvs
+            | Q(car_type__name__in=["SUV", "Pickup Truck", "Crossover"])
             | Q(car_model__name__icontains="suv")
             | Q(car_model__name__icontains="truck")
             | Q(car_model__name__icontains="awd")
@@ -339,19 +364,22 @@ def _filtered_listings(request):
         )
     elif vehicle_segment == "cars":
         queryset = queryset.filter(
-            Q(car_type__name__in=[
-                "Sedan",
-                "Coupe",
-                "Hatchback",
-                "Wagon",
-                "Convertible",
-                "Sports Car",
-            ])
-            | (
-                Q(car_type__isnull=True)
-                & ~Q(car_model__name__icontains="suv")
-                & ~Q(car_model__name__icontains="truck")
-                & ~Q(car_model__name__icontains="awd")
+            ~known_suvs
+            & (
+                Q(car_type__name__in=[
+                    "Sedan",
+                    "Coupe",
+                    "Hatchback",
+                    "Wagon",
+                    "Convertible",
+                    "Sports Car",
+                ])
+                | (
+                    Q(car_type__isnull=True)
+                    & ~Q(car_model__name__icontains="suv")
+                    & ~Q(car_model__name__icontains="truck")
+                    & ~Q(car_model__name__icontains="awd")
+                )
             )
         )
 
@@ -423,7 +451,7 @@ def listings_page(request):
     page_number = request.GET.get("page")
     listings = paginator.get_page(page_number)
     for listing in listings:
-        _attach_primary_image_url(listing)
+        _attach_listing_image_urls(listing)
 
     fuel_types = (
         Listing.objects.exclude(fuel_type="")
@@ -547,7 +575,7 @@ def single_listing(request, listing_id):
         messages.error(request, "This listing is awaiting admin approval.")
         return redirect("listings_page")
 
-    _attach_primary_image_url(listing)
+    _attach_listing_image_urls(listing)
     return render(request, "single-listing.html", {"listing": listing})
 
 
@@ -556,14 +584,17 @@ def single_listing(request, listing_id):
 def edit_listing(request, listing_id):
     """Allow the listing owner to edit their listing."""
     listing = get_object_or_404(Listing, pk=listing_id)
+    next_url = request.GET.get("next") or request.POST.get("next")
 
     # Get the logged-in user's profile
     profile = Profile.objects.filter(user=request.user).first()
 
-    # Only the owner may edit
-    if not profile or listing.owner != profile:
+    # Owner or admin users may edit
+    is_admin_user = bool(request.user.is_staff or request.user.is_superuser)
+    is_owner = bool(profile and listing.owner == profile)
+    if not (is_owner or is_admin_user):
         messages.error(request, "You do not have permission to edit this listing.")
-        return redirect("listings_page")
+        return redirect(next_url or "listings_page")
 
     # Clear any stale queued messages so unrelated alerts don't appear here.
     if request.method == "GET":
@@ -582,6 +613,7 @@ def edit_listing(request, listing_id):
                 {
                     "listing": listing,
                     "form_error": "Car make and car model are required.",
+                    "next_url": next_url,
                 },
             )
 
@@ -594,9 +626,9 @@ def edit_listing(request, listing_id):
             request,
             "Listing updated and sent back for admin approval.",
         )
-        return redirect("listings_page")
+        return redirect(next_url or "listings_page")
 
-    return render(request, "edit_listing.html", {"listing": listing})
+    return render(request, "edit_listing.html", {"listing": listing, "next_url": next_url})
 
 
 @require_http_methods(["GET", "POST"])
@@ -610,6 +642,14 @@ def review_submission(request, listing_id):
     listing = get_object_or_404(Listing, pk=listing_id)
 
     if request.method == "POST":
+        admin_action = (request.POST.get("admin_action") or "save").strip().lower()
+
+        if admin_action == "reject":
+            _send_submission_notification(listing, "rejected")
+            listing.delete()
+            messages.success(request, "Submission rejected and removed.")
+            return redirect("approvals_page")
+
         make_name = (request.POST.get("car_make") or "").strip()
         model_name = (request.POST.get("car_model") or "").strip()
 
@@ -622,26 +662,23 @@ def review_submission(request, listing_id):
                     "form_data": request.POST.dict(),
                     "is_admin_review": True,
                     "form_error": "Car make and car model are required.",
-                    "submit_label": "Edit & Approve",
                     "back_url": "approvals_page",
-                    "back_label": "Back to Approvals",
-                    "show_approval_checkbox": True,
+                    "back_label": "Back to New Submissions",
                     **_get_choice_options(),
                 },
             )
 
         data = request.POST.dict()
         _apply_listing_fields(listing, data, request.FILES, keep_existing_images=True)
-        listing.is_approved = request.POST.get("approve_listing") == "on"
+        listing.is_approved = admin_action == "approve"
         listing.save()
 
         if listing.is_approved:
             _send_submission_notification(listing, "approved")
+            messages.success(request, "Submission updated and approved.")
+        else:
+            messages.success(request, "Submission changes saved. It is still pending approval.")
 
-        messages.success(
-            request,
-            "Submission updated and approved." if listing.is_approved else "Submission updated and saved without approval.",
-        )
         return redirect("approvals_page")
 
     form_data = {
@@ -667,11 +704,8 @@ def review_submission(request, listing_id):
             "listing": listing,
             "form_data": form_data,
             "is_admin_review": True,
-            "submit_label": "Edit & Approve",
             "back_url": "approvals_page",
-            "back_label": "Back to Approvals",
-            "show_approval_checkbox": True,
-            "approval_checked": False,
+            "back_label": "Back to New Submissions",
             **_get_choice_options(),
         },
     )
@@ -682,21 +716,24 @@ def review_submission(request, listing_id):
 def delete_listing(request, listing_id):
     """Allow the listing owner to delete their listing."""
     listing = get_object_or_404(Listing, pk=listing_id)
+    next_url = request.GET.get("next") or request.POST.get("next")
 
     # Get the logged-in user's profile
     profile = Profile.objects.filter(user=request.user).first()
 
-    # Only the owner may delete
-    if not profile or listing.owner != profile:
+    # Owner or admin users may delete
+    is_admin_user = bool(request.user.is_staff or request.user.is_superuser)
+    is_owner = bool(profile and listing.owner == profile)
+    if not (is_owner or is_admin_user):
         messages.error(request, "You do not have permission to delete this listing.")
-        return redirect("listings_page")
+        return redirect(next_url or "listings_page")
 
     if request.method == "POST":
         listing.delete()
         messages.success(request, "Listing deleted successfully.")
-        return redirect("listings_page")
+        return redirect(next_url or "listings_page")
 
-    return render(request, "delete_listing.html", {"listing": listing})
+    return render(request, "delete_listing.html", {"listing": listing, "next_url": next_url})
 
 
 @require_http_methods(["POST"])
@@ -750,12 +787,159 @@ def selected_vehicles_page(request):
     by_id = {str(listing.id): listing for listing in listings}
     ordered = [by_id[_id] for _id in selected_ids if _id in by_id]
     for listing in ordered:
-        _attach_primary_image_url(listing)
+        _attach_listing_image_urls(listing)
 
     return render(
         request,
         "selected_vehicles.html",
         {"selected_listings": ordered},
+    )
+
+
+@require_http_methods(["POST"])
+@login_required(login_url="login")
+def complete_purchase(request):
+    """Submit a purchase request for all currently selected vehicles."""
+    selected_ids = _get_selected_vehicle_ids(request)
+    profile = Profile.objects.filter(user=request.user).first()
+
+    if not selected_ids:
+        messages.error(request, "Purchase failed: your bag is empty.")
+        if profile:
+            Notification.objects.create(
+                profile=profile,
+                subject="Payment failed",
+                message="Payment could not be completed because your bag was empty.",
+            )
+        return redirect("selected_vehicles_page")
+
+    full_name = (request.POST.get("full_name") or "").strip()
+    email = (request.POST.get("email") or "").strip()
+    phone = (request.POST.get("phone") or "").strip()
+    billing_address = (request.POST.get("billing_address") or "").strip()
+    delivery_address = (request.POST.get("delivery_address") or "").strip()
+    cardholder_name = (request.POST.get("cardholder_name") or "").strip()
+    card_number_raw = (request.POST.get("card_number") or "").strip()
+    expiry_raw = (request.POST.get("expiry") or "").strip()
+    cvv_raw = (request.POST.get("cvv") or "").strip()
+    notes = (request.POST.get("notes") or "").strip()
+
+    card_number = "".join(ch for ch in card_number_raw if ch.isdigit())
+    cvv = "".join(ch for ch in cvv_raw if ch.isdigit())
+
+    expiry_valid = False
+    expiry_month = None
+    expiry_year = None
+    if "/" in expiry_raw:
+        month_part, year_part = [item.strip() for item in expiry_raw.split("/", 1)]
+        if month_part.isdigit() and year_part.isdigit() and len(year_part) in {2, 4}:
+            expiry_month = int(month_part)
+            year_int = int(year_part)
+            expiry_year = 2000 + year_int if len(year_part) == 2 else year_int
+            if 1 <= expiry_month <= 12:
+                now = datetime.now()
+                expiry_valid = (expiry_year > now.year) or (
+                    expiry_year == now.year and expiry_month >= now.month
+                )
+
+    if (
+        not full_name
+        or not email
+        or not phone
+        or not billing_address
+        or not delivery_address
+        or not cardholder_name
+        or len(card_number) < 13
+        or len(card_number) > 19
+        or not expiry_valid
+        or len(cvv) not in {3, 4}
+    ):
+        messages.error(request, "Payment failed: please provide valid card and billing details.")
+        if profile:
+            Notification.objects.create(
+                profile=profile,
+                subject="Payment failed",
+                message="Your payment attempt failed validation. Please verify your card details and try again.",
+            )
+        return redirect("selected_vehicles_page")
+
+    vehicles = Listing.objects.filter(id__in=selected_ids, is_approved=True)
+    vehicle_count = vehicles.count()
+    subtotal = sum((item.price or 0) for item in vehicles)
+    masked_card = f"**** **** **** {card_number[-4:]}" if len(card_number) >= 4 else "****"
+    purchase_reference = uuid.uuid4().hex[:10].upper()
+
+    if vehicle_count == 0:
+        messages.error(request, "Payment failed: no approved vehicles were available in your bag.")
+        if profile:
+            Notification.objects.create(
+                profile=profile,
+                subject="Payment failed",
+                message="Your bag did not contain approved vehicles at checkout time.",
+            )
+        return redirect("selected_vehicles_page")
+
+    _save_selected_vehicle_ids(request, [])
+    messages.success(
+        request,
+        f"Payment successful for {vehicle_count} vehicle(s), total €{subtotal:,}. Ref: {purchase_reference}",
+    )
+
+    if profile:
+        Notification.objects.create(
+            profile=profile,
+            subject="Payment successful",
+            message=(
+                f"Your payment was successful.\n"
+                f"Reference: {purchase_reference}\n"
+                f"Vehicles: {vehicle_count}\n"
+                f"Total Paid: €{subtotal:,}\n"
+                f"Card: {masked_card}\n"
+                f"Billing Address: {billing_address}\n"
+                f"Delivery Address: {delivery_address}"
+                + (f"\nNotes: {notes}" if notes else "")
+            ),
+        )
+
+    return redirect("selected_vehicles_page")
+
+
+@require_http_methods(["GET"])
+@login_required(login_url="login")
+def my_submissions_page(request):
+    """Display listings page for admins and personal submissions page for regular users."""
+    is_admin_user = bool(request.user.is_staff or request.user.is_superuser)
+
+    base_queryset = Listing.objects.select_related("car_make", "car_model", "car_type", "owner")
+
+    if is_admin_user:
+        queryset = base_queryset.filter(is_approved=True).order_by("-created", "-id")
+        page_title = "Submissions"
+        empty_message = "No listings are available right now."
+    else:
+        profile = Profile.objects.filter(user=request.user).first()
+        queryset = (
+            base_queryset.filter(owner=profile, is_approved=False).order_by("-created", "-id")
+            if profile
+            else base_queryset.none()
+        )
+        page_title = "My Submissions"
+        empty_message = "You have not submitted any listings yet."
+
+    submissions = list(queryset)
+    for listing in submissions:
+        _attach_listing_image_urls(listing)
+
+    return render(
+        request,
+        "submissions.html",
+        {
+            "submissions": submissions,
+            "is_admin_user": is_admin_user,
+            "can_manage_submissions": True,
+            "page_title": page_title,
+            "empty_message": empty_message,
+        },
     )
 
 
@@ -784,7 +968,7 @@ def approvals_page(request):
     page_number = request.GET.get("page")
     pending_listings = paginator.get_page(page_number)
     for listing in pending_listings:
-        _attach_primary_image_url(listing)
+        _attach_listing_image_urls(listing)
 
     return render(
         request,
@@ -802,7 +986,7 @@ def approve_submission(request, listing_id):
         return redirect("listings_page")
 
     listing = get_object_or_404(Listing, pk=listing_id)
-    _attach_primary_image_url(listing)
+    _attach_listing_image_urls(listing)
     listing.is_approved = True
     listing.save(update_fields=["is_approved"])
     _send_submission_notification(listing, "approved")
@@ -819,7 +1003,7 @@ def reject_submission(request, listing_id):
         return redirect("listings_page")
 
     listing = get_object_or_404(Listing, pk=listing_id)
-    _attach_primary_image_url(listing)
+    _attach_listing_image_urls(listing)
     _send_submission_notification(listing, "rejected")
     listing.delete()
     messages.success(request, "Submission rejected and removed.")

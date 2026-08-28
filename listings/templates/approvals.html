@@ -4,10 +4,10 @@
 
 {% with placeholder_img="images/listing-placeholder.svg" %}
 
-{% block extra_title %}- Approvals{% endblock %}
+{% block extra_title %}- New Submissions{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=results-box">
 {% endblock %}
 
 {% block page_header %}
@@ -19,12 +19,11 @@
 {% endblock %}
 
 {% block content %}
-  <div class="listings-app">
+  <div class="listings-app listings-approvals-page">
     <main class="page-shell">
       <section class="results-section">
         <div class="section-title-wrap">
-          <h2>Approvals</h2>
-          <p class="mb-0">User submissions waiting for review.</p>
+          <h2><span class="section-title-pill">New Submissions</span></h2>
         </div>
 
         <div class="cards-grid">
@@ -67,7 +66,7 @@
         </div>
 
         {% if pending_listings.paginator.num_pages > 1 %}
-          <nav class="pagination-wrap" aria-label="Approvals pagination">
+          <nav class="pagination-wrap" aria-label="New submissions pagination">
             <div class="pagination-list">
               {% if pending_listings.has_previous %}
                 <div><a href="?page={{ pending_listings.previous_page_number }}">&laquo;</a></div>

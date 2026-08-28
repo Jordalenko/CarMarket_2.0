@@ -6,7 +6,7 @@
 .listings-app {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f4f6f9;
+  background: transparent;
   color: #1f2937;
 }
 
@@ -26,6 +26,7 @@
 .listings-app .search-shell {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .listings-app .search-panel {
@@ -34,6 +35,8 @@
   background: #5a8fc7;
   border: 2px solid #456f9a;
   padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(2, 8, 23, 0.2);
 }
 
 .listings-app .search-grid {
@@ -89,6 +92,34 @@
   margin: 36px 0 24px;
 }
 
+.listings-app .section-title-wrap h2 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: 0.01em;
+  color: #0f172a;
+}
+
+.listings-app .section-title-pill {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.24);
+}
+
+.listings-results-page .section-title-pill,
+.listings-approvals-page .section-title-pill,
+.listings-submissions-page .section-title-pill,
+.listings-selected-page .section-title-pill {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px solid #0f172a;
+  border-radius: 4px;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
+}
+
 .listings-app .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -102,6 +133,14 @@
   min-height: 320px;
   display: flex;
   flex-direction: column;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  transition: transform 0.16s ease, box-shadow 0.2s ease;
+}
+
+.listings-app .listing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
 }
 
 .listings-app .listing-image-box {
@@ -118,6 +157,69 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.listing-image-carousel,
+.listing-single-carousel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.listing-image-carousel {
+  justify-content: center;
+}
+
+.listing-image-carousel .listing-carousel-slide,
+.listing-single-carousel .listing-carousel-slide {
+  display: none !important;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+}
+
+.listing-image-carousel .listing-carousel-slide > a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.listing-image-carousel .listing-carousel-slide.is-active,
+.listing-single-carousel .listing-carousel-slide.is-active {
+  display: block !important;
+  flex: 1 1 auto;
+}
+
+.listing-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 38px;
+  width: 100%;
+  padding: 0 6px;
+  background: #fff;
+}
+
+.listing-carousel-arrow {
+  appearance: none;
+  width: 32px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #12497f;
+  font-size: 32px;
+  font-family: inherit;
+  line-height: 30px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.listing-carousel-arrow:hover,
+.listing-carousel-arrow:focus {
+  background: transparent;
+  color: #0b3f72;
 }
 
 .listings-app .listing-card-body h3 {
@@ -141,6 +243,7 @@
 .listings-app .listing-card-body p {
   margin: 0 0 8px;
   font-size: 15px;
+  line-height: 1.45;
 }
 
 .listings-app .listing-card-body {
@@ -178,7 +281,9 @@
 }
 
 .listings-app .pagination-list li a,
-.listings-app .pagination-list li span {
+.listings-app .pagination-list li span,
+.listings-app .pagination-list > div > a,
+.listings-app .pagination-list > div > span {
   min-width: 42px;
   height: 42px;
   padding: 0 12px;
@@ -189,16 +294,24 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  border-radius: 10px;
 }
 
-.listings-app .pagination-list li.active span {
+.listings-app .pagination-list li.active span,
+.listings-app .pagination-list > div.active > span {
   background: #12497f;
   color: #fff;
   border-color: #12497f;
+  border-radius: 999px;
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
 }
 
-.listings-app .pagination-list li.disabled span {
+.listings-app .pagination-list li.disabled span,
+.listings-app .pagination-list > div.disabled > span {
   color: #9aa3af;
+  background: #fff;
 }
 
 .listings-app .sr-only {
@@ -232,6 +345,19 @@
   gap: 16px;
 }
 
+.listings-app .form-card-head h1 {
+  margin: 0;
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.24);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
 .listings-app .back-link {
   color: #12497f;
   text-decoration: none;
@@ -255,6 +381,14 @@
   margin-top: 10px;
 }
 
+.listings-app .current-image-card {
+  border: 1px solid #d7dee6;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
 .listings-app .current-image-item {
   border: 1px solid #d7dee6;
   background: #f8fafc;
@@ -274,6 +408,68 @@
 .listings-app .current-image-placeholder {
   color: #6b7280;
   font-size: 14px;
+}
+
+.listings-app .current-image-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.listings-app .current-image-delete input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.listings-app .image-upload-section {
+  border: 1px solid #d7dee6;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.listings-app .image-upload-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.listings-app .image-upload-item {
+  border: 1px dashed #bfd0e4;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.listings-app .image-upload-item label {
+  margin: 0 0 6px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.listings-app .image-upload-item input[type="file"] {
+  min-height: auto;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.listings-app .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.listings-app .admin-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
 }
 
 .listings-app .approval-check-wrap {
@@ -322,9 +518,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 16px;
+  padding: 8px 16px;
+  min-height: 36px;
   border-radius: 50px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
@@ -427,7 +624,137 @@
   align-items: center;
 }
 
-@media (max-width: 900px) {
+.listings-app .purchase-cta-wrap {
+  margin: 28px auto 0;
+  text-align: center;
+}
+
+.listings-app .purchase-feedback-wrap {
+  max-width: 760px;
+  margin: 0 auto 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.listings-app .purchase-feedback-alert {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  text-align: center;
+}
+
+.listings-app .purchase-feedback-alert.is-success {
+  background: #e9f8ef;
+  border-color: #a3dcb3;
+  color: #14532d;
+}
+
+.listings-app .purchase-feedback-alert.is-error {
+  background: #fff1f1;
+  border-color: #f0b1b1;
+  color: #7f1d1d;
+}
+
+.listings-app .purchase-cta-note {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.listings-app .purchase-btn {
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #dc2626;
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.35);
+  animation: purchasePulse 1.6s ease-in-out infinite;
+}
+
+.listings-app .purchase-btn:hover,
+.listings-app .purchase-btn:focus {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.purchase-modal .modal-content {
+  border-radius: 14px;
+  border: 1px solid #d7dee6;
+}
+
+.purchase-modal .modal-header,
+.purchase-modal .modal-footer {
+  border-color: #e5eaf1;
+}
+
+.purchase-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.purchase-form-grid .field-block label {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.purchase-form-grid .field-block input,
+.purchase-form-grid .field-block textarea {
+  border-radius: 8px;
+  border-color: #cfd8e3;
+}
+
+.purchase-form-grid .field-block textarea {
+  min-height: 90px;
+}
+
+@keyframes purchasePulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 8px 18px rgba(220, 38, 38, 0.35);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 10px 22px rgba(220, 38, 38, 0.45);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 8px 18px rgba(220, 38, 38, 0.35);
+  }
+}
+
+#main-nav .navbar-nav {
+  gap: 6px;
+}
+
+#main-nav .segment-nav-link {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 8px 14px !important;
+  line-height: 1.2;
+  transition: all 0.2s ease;
+}
+
+#main-nav .segment-nav-link:hover,
+#main-nav .segment-nav-link:focus {
+  color: #0b3f72 !important;
+  background: #eaf2fb;
+  border-color: #bfd4eb;
+}
+
+#main-nav .segment-nav-link.is-active {
+  color: #ffffff !important;
+  background: #12497f;
+  border-color: #12497f;
+  box-shadow: 0 5px 14px rgba(18, 73, 127, 0.3);
+}
+
+/* 720px - 1199px */
+@media (min-width: 720px) and (max-width: 1199.98px) {
+  .listings-app .page-shell {
+    padding: 28px 16px 44px;
+  }
+
   .listings-app .cards-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -435,16 +762,61 @@
   .listings-app .search-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .listings-app .current-images-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .listings-app .search-grid .sort-item {
+    grid-column: 1 / 3;
+    justify-self: center;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .listings-app .section-title-wrap h2 {
+    font-size: 30px;
+  }
+
+  .listings-app .listing-card-body h3 {
+    font-size: 20px;
+  }
+
+  #main-nav .navbar-nav {
+    width: 100%;
+    padding: 10px 8px 8px;
+    gap: 8px;
+  }
+
+  #main-nav .nav-item {
+    width: 100%;
+  }
+
+  #main-nav .segment-nav-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    background: #f8fafc;
+    border-color: #d7e3f1;
+  }
+
+  #main-nav .nav-link {
+    margin-right: 0 !important;
+  }
 }
 
-@media (max-width: 640px) {
+/* 320px - 719px */
+@media (max-width: 719.98px) {
   .listings-app .page-shell {
-    padding: 24px 14px 36px;
+    padding: 18px 12px 30px;
   }
 
   .listings-app .search-panel {
-    max-width: 320px;
-    padding: 16px;
+    max-width: none;
+    padding: 14px;
+    border-radius: 10px;
   }
 
   .listings-app #mobileSearchFilters {
@@ -453,8 +825,115 @@
 
   .listings-app .search-grid,
   .listings-app .cards-grid,
-  .listings-app .create-listing-grid {
+  .listings-app .create-listing-grid,
+  .listings-app .current-images-grid,
+  .listings-app .image-upload-grid,
+  .purchase-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .listings-app .search-grid .reset-item,
+  .listings-app .search-grid .submit-item,
+  .listings-app .search-grid .sort-item {
+    grid-column: auto;
+    grid-row: auto;
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .listings-app .search-shell,
+  .listings-app .results-section,
+  .listings-app .section-title-wrap,
+  .listings-app .empty-state,
+  .listings-app .pagination-wrap,
+  .listings-app .listing-card,
+  .listings-app .listing-card-body,
+  .listings-app .listing-card-actions,
+  .listings-app .vehicle-modal-footer {
+    text-align: center;
+  }
+
+  .listings-app .section-title-wrap {
+    margin: 20px 0 14px;
+  }
+
+  .listings-app .section-title-wrap h2 {
+    font-size: 26px;
+  }
+
+  .listings-app .listing-card {
+    min-height: 0;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .listings-app .listing-card-body h3 {
+    font-size: 19px;
+    line-height: 1.3;
+  }
+
+  .listings-app .listing-card-body {
+    align-items: center;
+  }
+
+  .listings-app .listing-card-body p {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .listings-app .listing-card-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding-top: 10px;
+  }
+
+  .listings-app .listing-card-actions .btn-pill,
+  .listings-app .listing-card-actions a.btn-pill {
+    width: 100%;
+  }
+
+  .listings-app .btn-pill {
+    min-height: 40px;
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .listings-app .form-actions,
+  .listings-app .admin-review-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .listings-app .form-actions .btn-pill,
+  .listings-app .admin-review-actions .btn-pill,
+  .listings-app .form-actions a.btn-pill {
+    width: 100%;
+  }
+
+  .listings-app .search-toggle-btn {
+    border-radius: 8px;
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .listings-app .search-item input,
+  .listings-app .search-item select,
+  .listings-app .search-actions button,
+  .listings-app .search-actions a {
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .vehicle-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vehicle-modal-footer .btn-pill,
+  .vehicle-modal-footer a.btn-pill,
+  .vehicle-modal-footer form {
+    width: 100%;
   }
 
   .listings-app .form-card-head {
@@ -462,12 +941,86 @@
     align-items: flex-start;
   }
 
+  .listings-app .form-card-head h1 {
+    font-size: 24px;
+  }
+
   .vehicle-modal-grid {
     grid-template-columns: 1fr;
   }
+
+  .listings-app .pagination-list {
+    justify-content: center;
+  }
 }
 
-@media (min-width: 768px) {
+/* 1200px - 1599px */
+@media (min-width: 1200px) and (max-width: 1599.98px) {
+  .listings-app .page-shell {
+    max-width: 1280px;
+  }
+
+  .listings-app .search-grid .reset-item {
+    grid-column: 3;
+    grid-row: 3;
+  }
+
+  .listings-app .search-grid .submit-item {
+    grid-column: 4;
+    grid-row: 3;
+  }
+
+  .listings-app .search-grid .sort-item {
+    grid-column: 2 / 4;
+    grid-row: 4;
+    justify-self: center;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .listings-app .cards-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .listings-app .search-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 1600px and above */
+@media (min-width: 1600px) {
+  .listings-app .page-shell {
+    max-width: 1520px;
+  }
+
+  .listings-app .search-grid .reset-item {
+    grid-column: 3;
+    grid-row: 3;
+  }
+
+  .listings-app .search-grid .submit-item {
+    grid-column: 4;
+    grid-row: 3;
+  }
+
+  .listings-app .search-grid .sort-item {
+    grid-column: 2 / 4;
+    grid-row: 4;
+    justify-self: center;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .listings-app .cards-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .listings-app .search-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 720px) {
   .listings-app #mobileSearchFilters {
     display: block !important;
   }

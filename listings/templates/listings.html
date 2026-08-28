@@ -8,7 +8,7 @@
 {% block extra_title %}- Listings{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=results-box">
 {% endblock %}
 
 {% block page_header %}
@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="listings-app">
+  <div class="listings-app listings-results-page">
     <main class="page-shell">
       <section class="search-shell">
         {% include 'partials/search_form.html' %}
@@ -28,16 +28,24 @@
 
       <section class="results-section">
         <div class="section-title-wrap">
-          <h2>Results</h2>
+          <h2><span class="section-title-pill">Results</span></h2>
         </div>
 
         <div class="cards-grid">
           {% for listing in listings %}
             <article class="listing-card" data-search-term="{{ listing.car_make }} {{ listing.car_model }} {{ listing.fuel_type }} {{ listing.year }}">
-              <div class="listing-image-box">
-                <a href="{% url 'single_listing' listing.id %}" aria-label="View {{ listing.car_make }} {{ listing.car_model }} details">
-                  <img src="{{ listing.primary_image_url }}" alt="Car image for {{ listing.car_make }} {{ listing.car_model }}">
-                </a>
+              <div class="listing-image-box listing-image-carousel" data-listing-carousel>
+                {% for image_url in listing.image_urls %}
+                  <div class="listing-carousel-slide{% if forloop.first %} is-active{% endif %}"{% if not forloop.first %} hidden{% endif %}>
+                    <a href="{% url 'single_listing' listing.id %}" aria-label="View {{ listing.car_make }} {{ listing.car_model }} details">
+                      <img src="{{ image_url }}" alt="{{ listing.car_make }} {{ listing.car_model }} image {{ forloop.counter }}">
+                    </a>
+                  </div>
+                {% endfor %}
+                <div class="listing-carousel-controls">
+                  <button type="button" class="listing-carousel-arrow listing-carousel-prev" data-carousel-prev aria-label="Previous image">&#8249;</button>
+                  <button type="button" class="listing-carousel-arrow listing-carousel-next" data-carousel-next aria-label="Next image">&#8250;</button>
+                </div>
               </div>
 
               <div class="listing-card-body">
@@ -117,7 +125,9 @@
 
                   <div class="modal-footer vehicle-modal-footer">
                     {% if request.user.is_authenticated %}
-                      {% if listing.id in selected_vehicle_ids %}
+                      {% if listing.owner and listing.owner.user == request.user %}
+                        <span class="btn-pill btn-pill-cancel">Your Listing</span>
+                      {% elif listing.id in selected_vehicle_ids %}
                         <form method="post" action="{% url 'unselect_vehicle' listing.id %}">
                           {% csrf_token %}
                           <input type="hidden" name="next" value="{{ request.get_full_path }}">

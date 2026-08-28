@@ -1,15 +1,24 @@
 html {
     height: 100%;
+    min-width: 320px;
 }
 
 body {
-    background: url('https://res.cloudinary.com/dutukkel2/image/upload/v1776968818/CarMarket_Cover_Pic_v2_fz1qkz.jpg') no-repeat center center fixed;
+    background: url('https://res.cloudinary.com/dutukkel2/image/upload/v1776968818/CarMarket_Cover_Pic_v2_fz1qkz.jpg') no-repeat center top fixed;
     background-size: cover;
+    background-color: #0b0b0b;
     min-height: 100vh;
     height: auto;
     padding-top: 118px;
     color: #555;
     font-family: 'Lato';
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-content {
+    flex: 1 0 auto;
 }
 
 /* from Bulma */
@@ -124,11 +133,82 @@ body {
 
 /* -------------------------------- Media Queries */
 
-/* Slightly larger container on xl screens */
-@media (min-width: 1200px) {
-  .container {
-    max-width: 80%;
-  }
+/* Responsive layout breakpoints */
+@media (max-width: 719.98px) {
+    body {
+        padding-top: 238px;
+        background-attachment: scroll;
+        background-repeat: repeat-y;
+        background-position: center top;
+        background-size: 100% auto;
+    }
+
+    header.container-fluid.fixed-top {
+        background: #fff;
+    }
+
+    .navbar,
+    .navbar-collapse,
+    .navbar-nav,
+    .list-inline,
+    .dropdown-menu,
+    .account-dropdown-menu {
+        text-align: center;
+    }
+
+    .navbar-toggler {
+        margin: 0 auto 10px;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .nav-link,
+    .dropdown-item {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .dropdown-menu {
+        width: 100%;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    .message-container,
+    .header-container,
+    .site-footer-inner,
+    .profile-page,
+    .profile-nav,
+    .profile-card,
+    .auth-page,
+    .auth-card {
+        text-align: center;
+    }
+}
+
+@media (min-width: 720px) and (max-width: 1199.98px) {
+    body {
+        padding-top: 180px;
+    }
+
+    .container {
+        max-width: 94%;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1599.98px) {
+    .container {
+        max-width: 80%;
+    }
+}
+
+@media (min-width: 1600px) {
+    .container {
+        max-width: 72%;
+    }
 }
 
 /* fixed top navbar only on medium and up */
@@ -151,7 +231,7 @@ body {
 }
 
 .site-footer {
-    margin-top: 24px;
+    margin-top: auto;
     background: rgba(15, 23, 42, 0.82);
     color: #e2e8f0;
     border-top: 1px solid rgba(148, 163, 184, 0.35);
@@ -167,7 +247,7 @@ body {
 }
 
 .profile-page {
-    background: #f5f5f5;
+    background: transparent;
     min-height: 100vh;
 }
 
@@ -176,11 +256,25 @@ body {
 }
 
 .profile-nav-link {
-    color: #4f6f95;
-    text-decoration: underline;
+    color: #ffffff;
+    text-decoration: none;
     font-size: 15px;
     margin-bottom: 10px;
     display: inline-block;
+    padding: 9px 14px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.22);
+}
+
+.profile-nav-link:hover,
+.profile-nav-link:focus {
+    color: #ffffff;
+    background: #1d4ed8;
+    border-color: #93c5fd;
+    text-decoration: none;
 }
 
 .profile-card {
