@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load static %}
+{% get_media_prefix as media_url %}
 
 {% with placeholder_img="images/listing-placeholder.svg" %}
 
@@ -161,37 +162,37 @@
             <div class="current-images-grid">
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_1 and listing.listing_image_1 != 'listings/default-listing-img.jpg' and listing.listing_image_1 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_1 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 1">
+                  <img src="{% if listing and listing.listing_image_1 and listing.listing_image_1 != 'listings/default-listing-img.jpg' and listing.listing_image_1 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_1 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 1">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_1"> Delete image 1</label>
               </div>
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_2 and listing.listing_image_2 != 'listings/default-listing-img.jpg' and listing.listing_image_2 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_2 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 2">
+                  <img src="{% if listing and listing.listing_image_2 and listing.listing_image_2 != 'listings/default-listing-img.jpg' and listing.listing_image_2 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_2 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 2">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_2"> Delete image 2</label>
               </div>
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_3 and listing.listing_image_3 != 'listings/default-listing-img.jpg' and listing.listing_image_3 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_3 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 3">
+                  <img src="{% if listing and listing.listing_image_3 and listing.listing_image_3 != 'listings/default-listing-img.jpg' and listing.listing_image_3 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_3 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 3">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_3"> Delete image 3</label>
               </div>
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_4 and listing.listing_image_4 != 'listings/default-listing-img.jpg' and listing.listing_image_4 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_4 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 4">
+                  <img src="{% if listing and listing.listing_image_4 and listing.listing_image_4 != 'listings/default-listing-img.jpg' and listing.listing_image_4 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_4 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 4">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_4"> Delete image 4</label>
               </div>
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_5 and listing.listing_image_5 != 'listings/default-listing-img.jpg' and listing.listing_image_5 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_5 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 5">
+                  <img src="{% if listing and listing.listing_image_5 and listing.listing_image_5 != 'listings/default-listing-img.jpg' and listing.listing_image_5 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_5 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 5">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_5"> Delete image 5</label>
               </div>
               <div class="current-image-card">
                 <div class="current-image-item">
-                  <img src="{% if listing and listing.listing_image_6 and listing.listing_image_6 != 'listings/default-listing-img.jpg' and listing.listing_image_6 != 'Placeholder_00001.jpg' %}/assets/{{ listing.listing_image_6 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 6">
+                  <img src="{% if listing and listing.listing_image_6 and listing.listing_image_6 != 'listings/default-listing-img.jpg' and listing.listing_image_6 != 'Placeholder_00001.jpg' %}{{ media_url }}{{ listing.listing_image_6 }}{% else %}{% static placeholder_img %}{% endif %}" alt="Current image 6">
                 </div>
                 <label class="current-image-delete"><input type="checkbox" name="delete_listing_image_6"> Delete image 6</label>
               </div>
