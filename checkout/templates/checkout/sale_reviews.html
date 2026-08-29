@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %}- Sales to Review{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=sale-reviews">
+{% endblock %}
+
+{% block content %}
+<div class="listings-app checkout-page">
+  <main class="page-shell">
+    <section class="checkout-card sale-review-card">
+      <h1>Sales to Review</h1>
+      {% for purchase in purchases %}
+        <article class="sale-review-item">
+          <h2>{{ purchase.purchase_reference }}</h2>
+          <p>Buyer: {{ purchase.buyer.get_full_name|default:purchase.buyer.username }}</p>
+          <p>Total paid: €{{ purchase.total }}</p>
+          {% for item in purchase.items.all %}
+            <p>{{ item.listing.car_make }} {{ item.listing.car_model }}: €{{ item.agreed_price }}</p>
+          {% endfor %}
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="purchase_id" value="{{ purchase.id }}">
+            <button type="submit" name="action" value="approve" class="btn-pill btn-pill-save">Approve sale</button>
+            <button type="submit" name="action" value="reject" class="btn-pill btn-pill-delete">Reject and relist</button>
+          </form>
+        </article>
+      {% empty %}
+        <p>No paid sales require review.</p>
+      {% endfor %}
+    </section>
+  </main>
+</div>
+{% endblock %}

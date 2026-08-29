@@ -100,6 +100,9 @@ My Profile
                         <a href="{% url 'create-profile' %}" class="btn btn-outline-primary profile-btn">
                             Create Profile
                         </a>
+                        <a href="{% url 'checkout:purchase_history' %}" class="btn btn-outline-primary profile-btn">
+                            Purchases
+                        </a>
                         <form method="post" action="{% url 'delete-profile' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger text-white profile-btn" onclick="return confirm('Are you sure you want to delete your account?');">

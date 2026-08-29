@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %}- Checkout{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=checkout">
+{% endblock %}
+
+{% block content %}
+<div class="listings-app checkout-page">
+  <main class="page-shell">
+    <section class="checkout-card">
+      <div class="form-card-head">
+        <h1>Checkout</h1>
+      </div>
+
+      {% if selected_listings %}
+        <form method="post" action="{% url 'checkout:create_session' %}">
+          {% csrf_token %}
+          {% for listing in selected_listings %}
+            <p>{{ listing.car_make }} {{ listing.car_model }}: €{{ listing.price|default:'0' }}</p>
+          {% endfor %}
+          <p>Vehicles: €{{ vehicle_total }}</p>
+          <p>Worldwide delivery: €{{ delivery_fee }}</p>
+          <p><strong>Total: €{{ checkout_total }}</strong></p>
+          <div class="checkout-form-fields">
+            <label for="billing_name">Billing name</label>
+            <input id="billing_name" name="billing_name" required>
+            <label for="billing_email">Billing email</label>
+            <input id="billing_email" name="billing_email" type="email" required>
+            <label for="billing_phone">Phone</label>
+            <input id="billing_phone" name="billing_phone" required>
+            <label for="billing_address">Billing address</label>
+            <textarea id="billing_address" name="billing_address" required></textarea>
+            <label for="delivery_address">Delivery address</label>
+            <textarea id="delivery_address" name="delivery_address" required></textarea>
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+          <button type="submit" class="btn-pill purchase-btn">Continue to Stripe</button>
+        </form>
+      {% else %}
+        <p>Your checkout is empty.</p>
+        <a href="{% url 'listings_page' %}" class="btn-pill btn-pill-view">Browse Listings</a>
+      {% endif %}
+    </section>
+  </main>
+</div>
+{% endblock %}

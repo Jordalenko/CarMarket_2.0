@@ -133,6 +133,8 @@
                           <input type="hidden" name="next" value="{{ request.get_full_path }}">
                           <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
                         </form>
+                      {% elif listing.sale_pending %}
+                        <span class="btn-pill btn-pill-cancel" aria-label="Sale pending">Sale pending</span>
                       {% else %}
                         <form method="post" action="{% url 'select_vehicle' listing.id %}">
                           {% csrf_token %}

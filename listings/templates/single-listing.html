@@ -77,12 +77,14 @@
 
             {% if request.user.is_authenticated %}
                 <div class="listing-card-actions">
-                    {% if listing.id in selected_vehicle_ids %}
-                        <form method="post" action="{% url 'unselect_vehicle' listing.id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="next" value="{% url 'selected_vehicles_page' %}">
-                            <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
-                        </form>
+                {% if listing.sale_pending %}
+                  <span class="btn-pill btn-pill-cancel" aria-label="Sale pending">Sale pending</span>
+                {% elif listing.id in selected_vehicle_ids %}
+                  <form method="post" action="{% url 'unselect_vehicle' listing.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'selected_vehicles_page' %}">
+                    <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
+                  </form>
                     {% else %}
                         <form method="post" action="{% url 'select_vehicle' listing.id %}">
                             {% csrf_token %}

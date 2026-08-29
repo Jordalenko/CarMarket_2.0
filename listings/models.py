@@ -1,4 +1,5 @@
 import uuid
+from django.utils import timezone
 from django.db import models
 from users.models import Profile
 
@@ -89,6 +90,8 @@ class Listing(models.Model):
     torque = models.IntegerField(null=True, blank=True)
     car_type = models.ForeignKey(CarType, on_delete=models.SET_NULL, null=True, blank=True)
     is_approved = models.BooleanField(default=False)
+    is_sold = models.BooleanField(default=False)
+    checkout_reserved_until = models.DateTimeField(null=True, blank=True)
     listing_image_1 = models.CharField(max_length=255, blank=True, default="listings/default-listing-img.jpg")
     listing_image_2 = models.CharField(max_length=255, blank=True, default="listings/default-listing-img.jpg")
     listing_image_3 = models.CharField(max_length=255, blank=True, default="listings/default-listing-img.jpg")
@@ -98,4 +101,11 @@ class Listing(models.Model):
 
     def __str__(self):
         return f"{self.car_make} {self.car_model}"
+
+    @property
+    def sale_pending(self):
+        return self.is_sold or (
+            self.checkout_reserved_until is not None
+            and self.checkout_reserved_until > timezone.now()
+        )
     

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %}- Purchases{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=purchases">
+{% endblock %}
+
+{% block content %}
+<div class="listings-app checkout-page">
+  <main class="page-shell">
+    <section class="checkout-card purchase-history-card">
+      <h1>Purchase history</h1>
+      {% for purchase in purchases %}
+        <article class="purchase-history-item">
+          <h2>{{ purchase.purchase_reference }}</h2>
+          <p>Status: {{ purchase.get_payment_status_display }}</p>
+          <p>Total: €{{ purchase.total }}</p>
+          {% for item in purchase.items.all %}
+            <a href="{% url 'single_listing' item.listing.id %}">{{ item.listing.car_make }} {{ item.listing.car_model }}</a>
+          {% endfor %}
+        </article>
+      {% empty %}
+        <p>No purchases found.</p>
+      {% endfor %}
+    </section>
+  </main>
+</div>
+{% endblock %}

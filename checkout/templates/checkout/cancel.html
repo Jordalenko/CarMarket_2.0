@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block extra_title %}- Payment cancelled{% endblock %}
+
+{% block content %}
+<div class="listings-app checkout-page">
+  <main class="page-shell">
+    <section class="checkout-card">
+      <h1>Payment cancelled</h1>
+      <p>No payment was taken. Your selected vehicles remain available while you decide.</p>
+      <a href="{% url 'checkout:checkout_page' %}" class="btn-pill btn-pill-view">Return to checkout</a>
+    </section>
+  </main>
+</div>
+{% endblock %}

@@ -25,7 +25,6 @@
 import json
 import os
 import uuid
-from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from django.conf import settings
@@ -554,13 +553,20 @@ def create_listing_with_make_model(request):
 def single_listing(request, listing_id):
     """Display a single listing's details."""
     listing = get_object_or_404(
-        Listing.objects.select_related("car_make", "car_model", "owner"),
+        Listing.objects.select_related("car_make", "car_model", "owner").prefetch_related(
+            "purchase_items",
+        ),
         pk=listing_id,
     )
 
     profile = None
     if request.user.is_authenticated:
         profile = Profile.objects.filter(user=request.user).first()
+
+    is_purchased_by_user = bool(
+        request.user.is_authenticated
+        and listing.purchase_items.filter(purchase__buyer=request.user).exists()
+    )
 
     can_view_unapproved = bool(
         request.user.is_authenticated
@@ -571,7 +577,11 @@ def single_listing(request, listing_id):
         )
     )
 
-    if not listing.is_approved and not can_view_unapproved:
+    if listing.is_sold and not is_purchased_by_user and not request.user.is_staff:
+        messages.error(request, "This vehicle has already been sold.")
+        return redirect("listings_page")
+
+    if not listing.is_approved and not can_view_unapproved and not is_purchased_by_user:
         messages.error(request, "This listing is awaiting admin approval.")
         return redirect("listings_page")
 
@@ -742,7 +752,7 @@ def select_vehicle(request, listing_id):
     """Add a vehicle to the logged-in user's selected list (shopping bag)."""
     listing = get_object_or_404(Listing, pk=listing_id)
 
-    if not listing.is_approved:
+    if not listing.is_approved or listing.sale_pending:
         messages.error(request, "You can only select approved vehicles.")
         next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
         return redirect(next_url or "listings_page")
@@ -783,6 +793,7 @@ def selected_vehicles_page(request):
     listings = Listing.objects.select_related("car_make", "car_model").filter(
         id__in=selected_ids,
         is_approved=True,
+        is_sold=False,
     )
     by_id = {str(listing.id): listing for listing in listings}
     ordered = [by_id[_id] for _id in selected_ids if _id in by_id]
@@ -796,114 +807,6 @@ def selected_vehicles_page(request):
     )
 
 
-@require_http_methods(["POST"])
-@login_required(login_url="login")
-def complete_purchase(request):
-    """Submit a purchase request for all currently selected vehicles."""
-    selected_ids = _get_selected_vehicle_ids(request)
-    profile = Profile.objects.filter(user=request.user).first()
-
-    if not selected_ids:
-        messages.error(request, "Purchase failed: your bag is empty.")
-        if profile:
-            Notification.objects.create(
-                profile=profile,
-                subject="Payment failed",
-                message="Payment could not be completed because your bag was empty.",
-            )
-        return redirect("selected_vehicles_page")
-
-    full_name = (request.POST.get("full_name") or "").strip()
-    email = (request.POST.get("email") or "").strip()
-    phone = (request.POST.get("phone") or "").strip()
-    billing_address = (request.POST.get("billing_address") or "").strip()
-    delivery_address = (request.POST.get("delivery_address") or "").strip()
-    cardholder_name = (request.POST.get("cardholder_name") or "").strip()
-    card_number_raw = (request.POST.get("card_number") or "").strip()
-    expiry_raw = (request.POST.get("expiry") or "").strip()
-    cvv_raw = (request.POST.get("cvv") or "").strip()
-    notes = (request.POST.get("notes") or "").strip()
-
-    card_number = "".join(ch for ch in card_number_raw if ch.isdigit())
-    cvv = "".join(ch for ch in cvv_raw if ch.isdigit())
-
-    expiry_valid = False
-    expiry_month = None
-    expiry_year = None
-    if "/" in expiry_raw:
-        month_part, year_part = [item.strip() for item in expiry_raw.split("/", 1)]
-        if month_part.isdigit() and year_part.isdigit() and len(year_part) in {2, 4}:
-            expiry_month = int(month_part)
-            year_int = int(year_part)
-            expiry_year = 2000 + year_int if len(year_part) == 2 else year_int
-            if 1 <= expiry_month <= 12:
-                now = datetime.now()
-                expiry_valid = (expiry_year > now.year) or (
-                    expiry_year == now.year and expiry_month >= now.month
-                )
-
-    if (
-        not full_name
-        or not email
-        or not phone
-        or not billing_address
-        or not delivery_address
-        or not cardholder_name
-        or len(card_number) < 13
-        or len(card_number) > 19
-        or not expiry_valid
-        or len(cvv) not in {3, 4}
-    ):
-        messages.error(request, "Payment failed: please provide valid card and billing details.")
-        if profile:
-            Notification.objects.create(
-                profile=profile,
-                subject="Payment failed",
-                message="Your payment attempt failed validation. Please verify your card details and try again.",
-            )
-        return redirect("selected_vehicles_page")
-
-    vehicles = Listing.objects.filter(id__in=selected_ids, is_approved=True)
-    vehicle_count = vehicles.count()
-    subtotal = sum((item.price or 0) for item in vehicles)
-    masked_card = f"**** **** **** {card_number[-4:]}" if len(card_number) >= 4 else "****"
-    purchase_reference = uuid.uuid4().hex[:10].upper()
-
-    if vehicle_count == 0:
-        messages.error(request, "Payment failed: no approved vehicles were available in your bag.")
-        if profile:
-            Notification.objects.create(
-                profile=profile,
-                subject="Payment failed",
-                message="Your bag did not contain approved vehicles at checkout time.",
-            )
-        return redirect("selected_vehicles_page")
-
-    _save_selected_vehicle_ids(request, [])
-    messages.success(
-        request,
-        f"Payment successful for {vehicle_count} vehicle(s), total €{subtotal:,}. Ref: {purchase_reference}",
-    )
-
-    if profile:
-        Notification.objects.create(
-            profile=profile,
-            subject="Payment successful",
-            message=(
-                f"Your payment was successful.\n"
-                f"Reference: {purchase_reference}\n"
-                f"Vehicles: {vehicle_count}\n"
-                f"Total Paid: €{subtotal:,}\n"
-                f"Card: {masked_card}\n"
-                f"Billing Address: {billing_address}\n"
-                f"Delivery Address: {delivery_address}"
-                + (f"\nNotes: {notes}" if notes else "")
-            ),
-        )
-
-    return redirect("selected_vehicles_page")
-
-
 @require_http_methods(["GET"])
 @login_required(login_url="login")
 def my_submissions_page(request):
@@ -913,7 +816,10 @@ def my_submissions_page(request):
     base_queryset = Listing.objects.select_related("car_make", "car_model", "car_type", "owner")
 
     if is_admin_user:
-        queryset = base_queryset.filter(is_approved=True).order_by("-created", "-id")
+        queryset = base_queryset.filter(
+            is_approved=True,
+            is_sold=False,
+        ).order_by("-created", "-id")
         page_title = "Submissions"
         empty_message = "No listings are available right now."
     else:

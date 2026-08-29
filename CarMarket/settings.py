@@ -28,8 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_WH_SECRET = os.environ.get('STRIPE_WH_SECRET')
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'car-market-2-0-88117026bcc0.herokuapp.com',
@@ -54,6 +58,7 @@ INSTALLED_APPS = [
     'home',
     'listings',
     'users',
+    'checkout',
     'storages',
 ]
 
@@ -205,18 +210,6 @@ if 'USE_AWS' in os.environ:
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
     DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-
-
-# if 'USE_AWS' in os.environ:
-#     # bucket configuration
-#     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-#     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-#     AWS_STORAGE_BUCKET_NAME = 'car-market-2-0'
-#     AWS_S3_REGION_NAME = 'eu-west-2'
-#     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.eu-west-2.amazonaws.com'
-#     # AWS_S3_OBJECT_PARAMETERS = {
-#     #     'CacheControl': 'max-age=86400',
-#     # }
 
 
 # Default primary key field type

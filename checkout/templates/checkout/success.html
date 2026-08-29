@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_title %}- Payment received{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=checkout-success">
+{% endblock %}
+
+{% block content %}
+<div class="listings-app checkout-page">
+  <main class="page-shell">
+    <section class="checkout-card">
+      <h1>Payment received</h1>
+      <p>Your payment is being confirmed securely.</p>
+      <p>Purchase reference: <strong>{{ purchase.purchase_reference }}</strong></p>
+      <div class="success-purchase-summary">
+        <h2>Purchased vehicles</h2>
+        {% for item in purchase_items %}
+          <p>
+            <a href="{% url 'single_listing' item.listing.id %}">{{ item.listing.car_make }} {{ item.listing.car_model }}</a>
+            <span>€{{ item.agreed_price }}</span>
+          </p>
+        {% endfor %}
+        <p>Vehicle total: €{{ purchase.vehicle_total }}</p>
+        <p>Worldwide delivery: €{{ purchase.delivery_fee }}</p>
+        <p><strong>Total paid: €{{ purchase.total }}</strong></p>
+      </div>
+      <p>You will receive confirmation when Stripe completes the webhook notification.</p>
+      <a href="{% url 'listings_page' %}" class="btn-pill btn-pill-view">Return to listings</a>
+    </section>
+  </main>
+</div>
+{% endblock %}
