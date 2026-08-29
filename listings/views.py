@@ -33,7 +33,7 @@ from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import default_storage
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -61,10 +61,10 @@ def _store_uploaded_image(uploaded_file) -> Optional[str]:
     if not uploaded_file:
         return None
 
-    storage = FileSystemStorage(location=settings.MEDIA_ROOT, base_url=settings.MEDIA_URL)
     base_name, ext = os.path.splitext(uploaded_file.name)
     safe_name = f"listings/uploads/{uuid.uuid4().hex}_{base_name[:40]}{ext}"
-    return storage.save(safe_name, uploaded_file)
+
+    return default_storage.save(safe_name, uploaded_file)
 
 
 def _listing_image_url(image_name: Optional[str]) -> str:

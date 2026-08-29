@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = [
     'car-market-2-0-88117026bcc0.herokuapp.com',
@@ -188,25 +188,36 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'assets')
 
 
 if 'USE_AWS' in os.environ:
-    # bucket configuration
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = 'car-market-2-0'
     AWS_S3_REGION_NAME = 'eu-west-2'
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.eu-west-2.amazonaws.com'
-    # AWS_S3_OBJECT_PARAMETERS = {
-    #     'CacheControl': 'max-age=86400',
-    # }
+    AWS_S3_CUSTOM_DOMAIN = (
+        f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+    )
 
-    # s3 static settings
+    # Static files
     STATICFILES_LOCATION = 'static'
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
+    STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 
-    # s3 public media settings
+    # User-uploaded media
     MEDIAFILES_LOCATION = 'media'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'CarMarket.custom_storages.PublicMediaStorage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+
+
+# if 'USE_AWS' in os.environ:
+#     # bucket configuration
+#     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+#     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+#     AWS_STORAGE_BUCKET_NAME = 'car-market-2-0'
+#     AWS_S3_REGION_NAME = 'eu-west-2'
+#     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.eu-west-2.amazonaws.com'
+#     # AWS_S3_OBJECT_PARAMETERS = {
+#     #     'CacheControl': 'max-age=86400',
+#     # }
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
