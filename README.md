@@ -1,9 +1,9 @@
 # CarMarket
-[Link to deployed site](https://car-market-9069020e42dd.herokuapp.com/)
+[Link to deployed site](https://car-market-2-0-88117026bcc0.herokuapp.com/)
 <hr>
-CarMarket is a full stack e-commerce project allowing users to post listings with their vehicle for sale. The project was built using the Django framework for the backend and HTML, CSS, Bootstrap and JavaScript on the frontend. CarMarket allows the users to create an account and perform CRUD functionality on their profile and listings. This project was created as part of Code Institute's Level 5 Web Development course.
+CarMarket is a full stack e-commerce project allowing users to post listings with their vehicle for sale. The project was built using the Django framework for the backend and HTML, CSS, Bootstrap and JavaScript on the frontend. CarMarket allows the users to create an account and perform CRUD functionality on their profile and listing submissions. This project was created as part of Code Institute's Level 5 Web Development course.
 
-![CarMarket Image](https://res.cloudinary.com/dutukkel2/image/upload/v1776968971/CarMarket_main_image_bbzdwl.png)
+![CarMarket Image](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_home_page_l2jdde.webp)
 
 # Table Of Content
 
@@ -75,40 +75,50 @@ CarMarket is a full stack e-commerce project allowing users to post listings wit
 ### User Stories
 
 1. As a developer I can set up a new Django project so that I can create the project's structure.
-2. As a developer I can connect database and media storage so that the user's stored data is stored successfully
+2. As a developer I can connect a database and media storage so that the user's stored data is stored successfully
 3. As a developer I can deploy the application early so that I can confirm that the initial setup is working and can continue testing the application during development.
 4. As a developer I can create wireframes so that the layout of the website is clear for desktop and mobile
 5. As a user I want the website to be responsive so I can view it on my mobile
 6. As a user I want to be able to register an account so that I can have access to all functionality of CarMarket.
 7. As a registered user I want to be able to log in to my account so I can view my profile page.
-8. As a registered user I want to be able to see my profile page so that I can update my information.
+8. As a registered user I want to be able to see and edit my profile page so that I can update my information.
 9. As a registered user I want to be able to reset my password so that I can regain access to my account in case I forget my password.
 10. As a registered user I want to be able to delete my profile if I do not wish to use the services of CarMarket.
-11. As a user, I want to be able to see the most recent listings on the landing page so that I can quickly and easily discover the latest items available for sale
+11. As a user, I want a clear call to action on the home page to be able to see the most recent listings so that I can quickly and easily discover the latest items available for sale
 12. As a user I want to be able to see details about the listing such as a description and image so that I can find suitable car options and make informed decisions before I contact the seller.
 13. As a user I want to be able to easily navigate through pages of listings so that I can view all the listings in an organised way (pagination)
 14. As a site owner I want to ensure that the user is prompted with a notification message when performing CRUD operations or login/logout, and signup so that the user is informed about the outcome of the action taken
-15. As a registered user I want to be able to send messages to the seller of the listing so that I can arrange viewings and ask questions about the listing. (Won't Have)
-16. As a registered user I want to be able to view any messages I may have received so that I can keep track of communication with the seller. (Won't Have)
-17. As a registered user I want to be able to reply to messages so that I can connect with the seller. (Won't have)
-18. As a User I can navigate through the website so that I can access different sections efficiently
-19. As a user I can visit the home page so that I can quickly browse and find relevant car listings based on my preferences
-20. As a non-authenticated user, I want to access the listings, so that I can **view cars for sale.
-21. As a registered user I want to be able to send emails to the seller so that I can arrange viewings and ask questions about the listing.
-22. As the site administrator I want to be able to add listings. (Won't Have)
-23. As the site administrator I want to be able to view all my listings. (Won't Have)
-24. As the site administrator I want to be able to edit my listings. (Won't Have)
-25. As the site administrator I want to be able to delete my listings. (Won't Have)
+15. As a registered user I want messages to be exchanged with the seller when I purchase a listing.
+16. As a registered user I want to be able to view any messages I may have received so that I can keep track of communication with the seller.
+17. As a registered user I want to be able to reply to messages so that I can connect with the seller.
+18. As a User I can navigate through the website so that I can access different sections efficiently.
+19. As a user I can visit the home page so that I can quickly browse and find relevant car listings based on my preferences.
+20. As a non-authenticated user, I want to access the listings, so that I can view cars for sale.
+21. As a registered user I want to be able to send emails to the seller so that I can arrange viewings and ask questions about the listing. (won't have)
+22. As a registered user I want to be able to submit a listing for the seller to consign.
+23. As a registered user I want to be able to read, edit and delete submissions I have made to the seller.
+24. As the site administrator I want to be able to review, approve and reject user submitted vehicles.
+25. As the site administrator I want to be able to add listings.
+26. As the site administrator I want to be able to view all my listings.
+27. As the site administrator I want to be able to edit my listings.
+28. As the site administrator I want to be able to delete my listings.
+29. As the site administrator I want to be notified by messages when there is a vehicle purchase to review.
+30. As the site administrator I want to be able to read, approve and reject purchases.
+31. As a user I want to be notified when my purchase is rejected or approved.
+32. As a user I want to receive confirmation when my purchase is received and pending approval.
+33. As a site administrator I want vehicles with pending purchases to be identified as such once purchased.
+34. As a site administrator I want to be able to edit and delete user information and profiles.
+
 
 ### Site Goals
 
 1. To provide the users with a place to browse for cars.
 2. To provide a range of available cars for sale to potential buyers.
-3. To provide a place for the users to browse vehicles by brand, features and price range.
-4. To make the website available and functional on every device.
+3. To provide a place for the users to browse vehicles by brand, features, mileage, transmission type and price range.
+4. To make the website available and responsive on every device.
 
 ### Scope
-The project aims to develop an online car listing platform called "CarMarket" that facilitates users in viewing vehicle listings. The platform will be responsive and user-friendly, providing features for user registration, profile management and seamless navigation.
+The project aims to develop an online car listing platform called "CarMarket" that facilitates users viewing vehicle listings and purchasing if desired using secure transactions. The platform will be responsive and user-friendly, providing features for user registration, profile management and seamless navigation through to purchase.
 
 Key Features:
 
@@ -128,30 +138,30 @@ Key Features:
 4. Profile Management:
 - Registered users can view and edit their profiles, including personal details and profile pictures.
 - Users can reset their passwords in case they forget them.
-- Users can delete their profiles and associated listings.
+- Users can delete their profiles and associated listing submissions.
 
 5. Listing Management:
 - Admin users can perform CRUD on the listings with vehicles for sale.
-- The most recent listings will be displayed via a prominent link on the landing page.
+- A button linking the most recent listings will be displayed prominently on the landing page.
 - Listings will include details, descriptions, images, and a button to purchase from the site admin.
 
 6. Pagination:
 - Pagination will be implemented for easy navigation through pages of listings.
 
 7. Notification Messages:
-- Users will receive notification messages when performing CRUD operations, login/logout, and signup actions.
+- Users will receive notification messages when purchasing a vehicle. Admin users will receive notification messages when users purchase or submit vehicles.
 
 Benefits:
 
 1. User-Centric Experience: The platform focuses on the user's needs, allowing efficient browsing, purchase and communication.
 2. Efficient Navigation: Users can easily navigate through different sections of the website for seamless access.
-3. Effective Communication: Sending messages and notification messages features, enhance user communication and interaction.
+3. Effective Communication: Notification messages enhance user communication and interaction.
 
 ## Design
 ### Colour Scheme
-The website features a calming and professional color palette that combines shades of blue, violet, and green with complementary neutrals. <br>
-Overall, this color scheme creates a professional and user-friendly environment, with subtle variations in hue and transparency to guide users' attention and enhance the visual appeal of the website.
-![Colour Scheme](./assets/readme-images/)
+The website features a calming and professional color palette that combines shades found in nature including forest green and light brown with complementary black and white for contrast. <br>
+Overall, this color scheme creates a professional and user-friendly environment and enhances the visual appeal of the website.
+
 
 ### Database Schema
 ![database schema](https://res.cloudinary.com/dutukkel2/image/upload/v1776969191/CarMarket_db_schema_v4_tfqdir.png)
@@ -177,9 +187,6 @@ This Model was created to store all of the car brands (car make) in the database
 
 This model was created to store all of the car models in the database. It is connected to the CarMake model via ForeignKey field - car_make
 
-6. Favourites
-
-This model was created to store all of the favourite listings for each Profile. The model is connected to Listing and Profile models via ForeignKey fields - listing and owner.
 
 ### Fonts
 The font used in this project is the default font. <br>
@@ -209,11 +216,9 @@ The user stories are grouped into eight EPICS or Milestones. An additional Miles
 The structure of the user story issue consists of the user story, acceptance criteria, and tasks that outline the steps that are required for this issue to be completed. <br>
 
 During development where possible, the commit messages are connected to their corresponding issues. <br>
-![User Story](./assets/readme-images/user_stories/user-story-commits.PNG)
 
 #### GitHub Projects
-The project was created using a basic Kanban Board structure, divided into columns such as Todo, In Progress, Done, and Backlog. This setup provides a clear and organized way to track the status of tasks and visualize and manage the workflow. <br>
-![User Story](./assets/readme-images/github-projects.PNG)
+The project was created using a basic Kanban Board structure, divided into columns such as Todo, In Progress, Done, and Backlog. This setup provides a clear and organized way to track the status of tasks and visualize and manage the workflow. (Won't have all of the boards) <br>
 
 ## Features
 ### Navbar
@@ -224,96 +229,85 @@ The navbar is a component that is present on all pages. It was created using Boo
 
 
  ### Footer
- The footer consists of information about CarMarket and their contact details. To help the users connect with CarMarket there are icons with links to social media which open in a new tab. 
+ The very simple footer consists of information about CarMarket. To help the users connect with CarMarket there are icons with links to social media which open in a new tab. (Won't have information about CarMarket in the footer)
 
 
 ### Home
 #### Hero Section
-The choice of hero image for the website serves a specific purpose: it immediately communicates the main purpose of the website. The text overlay, "Find Your New Car," directly connects the image to the website's purpose. It encourages users to take action and search for their ideal vehicle, making the website's primary function clear right from the start. The high-end car image was carefully selected to create an immediate and powerful connection between the user and the website's mission, inviting them to explore the website further.
+The choice of hero image of a twisting country road for the website serves a specific purpose: it immediately communicates the love of driving. The text overlay, "Shop Now" directly connects the image to the website's purpose. It encourages users to take action and search for their ideal vehicle, making the website's primary function clear right from the start. The image was carefully selected to create an immediate and powerful connection between the user and the website's mission, inviting them to explore the website further.
+![home page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_home_page_l2jdde.webp)
 
 #### Search Form
-The search form allows the users to select via multiple filters like keywords, town, county, fuel type, year, and price. 
+The search form allows the users to select via multiple filters like keywords, brand, model, fuel type, year, and price. 
 The view that handles the search form on the back end, pulls all of the listings from the database and then applies all the filters from the user's request. The results are passed to the listings page which also has the same search form at the top. The search parameters are preserved within the form for a better user experience.
+![search page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_search_page_lalzyp.webp)
 
-#### Recent Listings
-This section displays the six most recent listings added to the system.
+#### Listings
+This section displays the six most recent listings added to the system. See above image.
 
-#### Listing Card
-The listing card is designed to present to the user the most important information about the listing. 
-The card consists of a title, location, time ago posted, year, miles, price, and a button for more info. The card and the button are links to the single listing page.
+#### Listings Cards
+The listing cards are designed to present to the user the most important information about the listing. 
+The card consists of a title, make and model, year, price, and a button to view details about the vehicle. The card and the button are links to the single listing page. The listings page consists of the same search form as the home page. Further down are displayed all the listings. Once the user applies filters from the search form the results are refined based on the filter applied. Six cards per page are displayed followed by pagination to allow the user to easily navigate through multiple pages of listings. The pagination works well with search results as well.
 
 
-### Listings Page
-The listings page consists of the same search form as the home page. Further down are displayed all the listings starting from the most recent ones. Once the user applies filters from the search form the results are refined based on the filter applied. Six cards per page are displayed followed by pagination to allow the user to easily navigate through multiple pages of listings. The pagination works well with search results as well.
-
+### Single Listings Page
+The listings page consists of the same search form as the nav bar on the home page. Below is displayed all the listing details for the vehicle selected by the view (popup) or image button (single listing page). Below the details is a button to selct the vehicle or return to the listings/search page (authenticated users).
+![single listing page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_single_listing_page_p8aqmy.webp)
 
 ### Create Listing
 This page can be accessed only by authenticated users. It provides the user with a listing creation form. During the planning process, the initial idea was to try and connect to an external API to fetch the car details based on the reg plate, however, all of the available APIs are paid. This is a future feature I would like to add. Implementing this will save time for the user and they won't have to fill out this very long form which will improve the user experience. Another idea to make the form more user-friendly was to break it into sections and make it dynamic. The only reason this wasn't completed was due to the timeframe for the project's deadline. 
-The form fields limit wrong user input as much as possible by implementing select elements with drop-down options and using regex validation. The car model field is dynamically populated by using JavaScript and making a call to the back end. The model field is then populated with the appropriate options based on the car make selection. This helps to prevent users from creating listings with wrong details. Django widget tweaks was used to render the form in a more user-friendly version. The required fields are indicated by the * symbol after each label.
-The Images section consists of 1 main image and six additional images. The main image input field is indicated so that the user can easily select the best possible main image for the card listing.
-
+The form fields limit wrong user input as much as possible by implementing select elements with drop-down options. I did not have time to implement security features to dynamically populate the car model and make fields using JavaScript and making a call to the back end. The model and make fields would then be populated with the appropriate options based on the car make selection. This would help prevent users from creating listings with wrong details and would be a useful add when time permits in the future. Another userful feature that time did not permit implementation of are Django widget tweaks to render the form in a more user-friendly version. The required fields would be indicated by the * symbol after each label.
+The Images section consists of 1 main image and six additional images in a carousel. The main image input field is indicated so that the user can easily select the best possible main image for the card listing.
+![create listing page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_submissions_page_k9vvyt.webp)
 
 ### Profile Page
 This page can be accessed only by authenticated users. It consists of a sidebar menu with links for Profile, My Listings, and My favourite listings. 
 The profile page is essentially a large card that includes the user's profile image and details like name, user name, email, and about me. Underneath, there are two buttons one for edit profile and one for delete profile.
+![profile page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_profile_page_r2ham4.webp)
 
-
-#### My listings
+#### Submissions
 This page shows all of the listings that were created by this user. The cards have additional buttons for editing and deleting listings which allows each user to easily manage their listings. Maximum of 6 listings per page display and then pagination will appear at the bottom to help the user navigate through their listings.
 
 
 #### Edit Listing
-This page displays the same form as create a listing, with already populated fields with the current details of the listing. The user can amend all of the details on the page and upload new images or just save the form as it is. Once submitted the user is redirected to my listings page.
+This page displays the same form as create a listing, with already populated fields with the current details of the listing. The user or admin can amend all of the details on the page and upload new images or just save the form as it is. Once submitted the user can find their submissions page via their profile icon drop down.
 
 
 #### Delete Listing
-When the user visits my listings page they can delete listings using the delete button on each card, which redirects the user to confirmation page. The page consists of a warning message and two buttons - one to go back and one to delete listing, which is in red colour to clearly indicate danger.  Once the user confirms, the listing is deleted. The user is then redirected to my listings page.
+When the user visits my listings page they can delete listings using the delete button on each listing form. A useful feature that time did not permit would redirect the user to a confirmation page. Somethinug to consider in later updates. The page would consist of a warning message and two buttons - one to go back and one to delete listing, which is in red colour to clearly indicate danger.  Once the user confirms, the listing is deleted. The user is then redirected to my listings page.
 
 
 #### View Listing
-This button leads to the single listing page. 
-On the top left, there is a button to go back. Since this page can be accessed from multiple places, the path for a step back cannot be a link to a specific URL. This is why this button brings the user one step back. Below the button is the images section consisting of one large image and up to 6 smaller images below. To display the images in a more user-friendly way Lighbox2 was used. The button can easily navigate through the images with the buttons on the side.
-
-Below that a description of the listing can be found. On the right side of the listing is where the most important information is presented to the user in a user-friendly manner. 
-The listing's title (consisting of the car make and car model) followed by the price and then how long ago was this listing created.
-Below that the relevant specifications are displayed, and by using icons the information is visually structured better.
-If the user visits a listing that is not theirs there is a heart that they can click to save the listing into their favourites the action is clearly communicated with a flash message and the heart changing to a red heart. If the user clicks the heart again, they will remove the listing from favourites and will get a flash message letting them know that.
+This button leads to a popup over the search results showing similar details to the single listing page. 
+![view listing page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_view_listing_page_lcsstf.webp)
 
 
-
-Further down there is a card with the seller's details, consisting of their image, name, email, phone, and location if added. Their image is a link to their user account page. Below that is an email seller button which when clicked opens a modal with a form. The form is prepopulated with the user's details if they are authenticated. Once submitted, an email is sent to the listing's owner with the details within the form. 
-![contact form](./assets/readme-images/features/)
-![contact email](./assets/readme-images/features/)
-
-
-#### User account and User account listings
-This page renders other user's profiles. It has a very similar layout to my profile page with a few small changes. There are no favourites links in the sidebar menu. The profile page does not have edit and delete buttons as users should only be able to amend their profile pages. The link for my listings shows all of the listings this user has created. The cards display with a view button only.
-
-![user account](./assets/readme-images/features/)
-
-![user account listings](./assets/readme-images/features/)
+#### Admin Pages
+The Admin page allows administrators to view, edit and delete user profile data, user submissions, user purchases can be rejected or approved in addition to all of the other typical functionality of the admin page.
+![admin page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_admin_page_vkiyfy.webp)
+![admin purchase page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_admin_purchases_page_wr46u1.webp)
 
 ### Sign In page
 Consist of a form with username and password. Below it has a link to reset password, followed by a sign in button which submits the form. The register link is position below that.
-
+![login page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_login_page_vti4nh.webp)
 
 ### Sign Up page
 Consists of a form with name, email, username, password, and password confirmation. Below it has a link to log in if the user already has an account. Below that is the signup button. The user is sent a welcome email to the email provided and is redirected to the profile page update form to customize their profile
-
+![signup page](https://res.cloudinary.com/dutukkel2/image/upload/v1788093612/cm_signup_page_hszgb8.webp)
 
 ### Sign out confirmation
-When the user clicks on the log out link in the nav, they are redirected to the confirmation page. This page consist of warning message and two buttons- one to go back and one to log out.
+When the user clicks on the log out link in the nav, they are redirected to the confirmation page. This page consist of warning message and two buttons- one to go back and one to log out. (Won't have)
 
 
 ### Edit Profile
 The edit profie page renders a form with prefilled fields with the existing information for this user. It consists of profie image, name, username, email, phone, town, county and about me section. Below that is the submit button which will update the profile details once submitted. 
 
 
-### Delete Profile Confirmation
-This page consists of warning message with two buttons - one to go back and one to delete the profile. Delete profile is in red to indicate danger. Once clicked the profile is deleted and the user is redirected to We are sorry to see you go page
+### Delete Profile
+This profile page has a delete button. Upon click a popup warning message appears to confirm deletion is desired. Delete profile is in red to indicate danger. Once clicked the profile is deleted and the user is redirected to We are sorry to see you go page
 
 ### We are sorry to see you go
-This page confirms that the profile was deleted. The user is presented with a flash message confirming the profile was deleted successfully. Below that there is a button to go back to the home page.
+This page confirms that the profile was deleted. The user is presented with a flash message confirming the profile was deleted successfully. Below that there is a button to go back to the home page.(Won't have).
 
 
 ### Password reset
@@ -321,31 +315,35 @@ This page prompts the user to enter their email address. An email with instructi
 
 
 ### Password reset email sent
-This page informs the user an email with instructions has been sent.
-
-
-Email with instructions
-
+This page informs the user an email with instructions has been sent. (Won't have)
 
 ### Enter a new password
-When the user follows the link from the email, they are sent to a page to set up their new password.
+When the user follows the link from the email, they are sent to a page to set up their new password. (Won't have)
 
-![pass reset new pass](./assets/readme-images/features/)
 
 ### Password Reset Completed
 Once the form is submitted the user is redirected to a page advising them the password reset was completed followed by a log-in button.
 
-![pass reset completed](./assets/readme-images/features/)
-
-### Error Pages
+### Error Page
 - 404
 
-- 403
+### Bag/Selected Vehicles Page
+Once users have chosen the vehicles they want to purchase they can click on the bag icon in the top right corner of the nav bar. This will bring them to a page displaying the selected vehicles with a brief summary of the vehicles and their cost. In addition, if the purchase is less than 20,000 EUR, a 100 EUR fee is added to the total.
+![selected vehicles page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_bag_page_vc9q5k.webp)
 
-- 500
+### Checkout Page
+After clicking the button to confirm purchase of the selected vehicles the user is redirected to a checkout page with a form to enter their details. Although time did not permit it a useful feature to add would be required data to prevent important user data from being missed. 
+![checkout page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089625/cm_checkout_page_tew7cp.webp)
 
+### Stripe Transaction Page
+After clicking the button to confirm purchase of the selected vehicles the stripe transaction page opens and users add their payment details.
+![stripe page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_stripe_page_olrnwa.webp)
 
+### Success Page
+When users complete purchase on the stripe page they are directed back to the site to a success page that displays an empty selected vehicles page, a zero balance in the bag icon in the nav bar and a message notification advising them that they have a vehcile pending sale.
 
+Further, this vehicle is now flagged as pending sale where the select vehicle button once was. The vehicle image button will redirect users back to the search results until the admin has deleted the listing. If the sale is rejected the select vehicle button will return to the listing card.
+![success page](https://res.cloudinary.com/dutukkel2/image/upload/v1788089626/cm_success_page_c3oq9h.webp)
 
 ## Future Features
 1. I would like to add a single-listing.html page to the listings app.
