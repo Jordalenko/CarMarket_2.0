@@ -358,6 +358,8 @@ Testing documentation can be found [here.](./TESTING.md)
 |Bug|Status|
 | ---| ---|
 
+|There were issues with implementing the AWS S3 bucket that required back and forth to integrate the listings images. I had to manually upload the listings images to the s3 bucket after creating the media folder and sub folder for listing images. | Sorted| There was an issue with the way some images were stored on the site. The field was a CharField not an ImageField. After being corrected and performing the above fix the images were served from the S3 bucket.| Sorted|
+
 
 ## Technologies And Languages
 ### Languages Used
@@ -367,21 +369,15 @@ Testing documentation can be found [here.](./TESTING.md)
 - Bootstrap
 - Python
 - Django
-- Django Rest Framework
 
 ### Python Modules
 - Boto3 is the Amazon Web Services (AWS) SDK for Python. It allows to interact with AWS services, such as S3
 
 - dj-database-url - This library is used to parse the database URL specified in the DATABASE_URL environment variable, which is commonly used for configuring database connections in Django projects.
 
-- django-resized - This package provides utilities for resizing images in Django. 
-
 - gunicorn - Gunicorn is a popular WSGI (Web Server Gateway Interface) HTTP server for running Python web applications, including Django applications, in a production environment.
 
-- Pillow - Pillow is a Python Imaging Library (PIL) fork that provides tools for working with images in various formats.
-
 - psycopg2 - Psycopg2 is a PostgreSQL adapter for Python. It allows Django to connect to PostgreSQL databases.
-
 
 - whitenoise - Whitenoise is a middleware for serving static files directly from your Django application.
 
@@ -390,16 +386,12 @@ Testing documentation can be found [here.](./TESTING.md)
 - [Git](https://git-scm.com/) was used as a version control software to commit and push the code to the GitHub repository.
 - [Code Institute Template](https://github.com/Code-Institute-Org/gitpod-full-template) was used as a starting point for the project.
 - [Pixelmator Pro](https://www.apple.com/uk/pixelmator-pro/) was used for creating the mockup images of the website during planning stage.
-- [Google Fonts](https://fonts.google.com/) was used to import fonts.
 - [Google Chrome Lighthouse](https://developers.google.com/web/tools/lighthouse) was used during the testing of the website.
 - [Google Chrome Developer Tools](https://developer.chrome.com/docs/devtools/overview/) was used during testing, debugging and making the website responsive.
 - [W3C HTML Validator](https://validator.w3.org/) was used to check for errors in the HTML code.
 - [W3C CSS Validator](https://jigsaw.w3.org/css-validator/) was used to check for errors in the CSS code
 - [Js Hint](https://jshint.com/) was used to validate the JavaScript code.
 - [CI Python Linter](https://pep8ci.herokuapp.com/) was used to validate the Python code.
-- [Online Convert](https://image.online-convert.com/convert-to-webp) used to convert images to webp format
-- [Coolors.co](https://coolors.co/) was used to display the colour scheme.
-- [Box Shadow Generator](https://cssgenerator.org/box-shadow-css-generator.html) was used to generate the shadows
 
 ## Deployment
 ### Before Deployment
@@ -423,34 +415,40 @@ To ensure the application is deployed correctly on Heroku it is mandatory to upd
 - The deployment method for this project is GitHub. Once selected, confirm that we want to connect to GitHub, search for the repository name, and click connect to connect the Heroku app to our GitHub code.
 - Scroll further down to the deploy section where automatic deploys can be enabled, which means that the app will update every time code is pushed to GitHub. Click deploy and wait for the app to be built. Once this is done, a message should appear letting us know that the app was successfully deployed with a view button to see the app.
 ### Creating a fork
-1. Navigate to the [repository](https://github.com/Dayana-N/CarMarket-PP4)
+1. Navigate to the [repository](https://github.com/Jordalenko/CarMarket_2.0.git)
 2. In the top-right corner of the page click on the fork button and select create a fork.
 3. You can change the name of the fork and add description 
 4. Choose to copy only the main branch or all branches to the new fork. 
 5. Click Create a Fork. A repository should appear in your GitHub
 
 ### Cloning Repository
-1. Navigate to the [repository](https://github.com/Dayana-N/CarMarket-PP4)
+1. Navigate to the [repository](https://github.com/Jordalenko/CarMarket_2.0.git)
 2. Click on the Code button on top of the repository and copy the link. 
 3. Open Git Bash and change the working directory to the location where you want the cloned directory. 
 4. Type git clone and then paste the link.
 5. Press Enter to create your local clone.
 ## Credits
+1. Listing images sourced via autotrader.co.uk and for the honda element and ford bronco autotrader.com
+2. Hero image sourced via Getty Images
+
 ### Media
-- The images for the listing were pruned from a figma dataset [deepvisualmarketing](https://deepvisualmarketing.github.io/). They are for display purpose only.
+- The images for the listing were pulled from Autotrader. See above. They are for display purpose only.
 
 ### Code
-- Learned how to setup django project and deploy to Heroku from CI Django Blog walkthrough 
-- [How to create dependant drop down](https://github.com/akjasim/cb_dj_dependent_dropdown) The code was later refactored to use Django Rest Api
-- [The Car models list is from (kaggle.com)](https://www.kaggle.com/datasets/abdulmalik1518/cars-datasets-2025) 
-- [Pagination fix for multiple search parameters](https://stackoverflow.com/questions/46026268/pagination-and-get-parameters)
-- [How to catch email sending exceptions](https://stackoverflow.com/questions/41457565/how-to-catch-email-sending-exceptions-in-django-1-10)
+- Learned how to setup django project and deploy to Heroku from CI Boutique Ado walkthrough 
+- [The Car models list is custom but was originally based on data from (kaggle.com)](https://www.kaggle.com/datasets/abdulmalik1518/cars-datasets-2025) 
 ### Acknowledgements
 - Huge thank you to my mentor Frank for helping me prune down my very ambitious idea to a trim MVP for my first full-stack project.
-- The Discord community and especially Steve Powell who listened to my struggles during development.
+- My Discord community of Steve, Robert and Ax. But especially Frank in Nigeria and Steve Powell who listened to my struggles during development and hung in with me until this very day. 
 
 ### Comments
-This project consists of two apps - Listings, and Users. 
+This has been a 12 month journey with the kindness of Code Institute accounting for the length. After completing the first three projects and the Boutique Ado walk through I was hired to work on a TV series as a VFX editor. This was 3 months. I understood that I had missed the deadline and it was only a call from Nadya asking if I wanted to climb back on the horse and attempt the full stack project after 6 months off. I decided to give it a go and hired my tutor to try and refresh everything I had forgotten and work on a fairly tight deadline.
+
+Unfortunately, with days until the project submission deadline my father passed away and I flew back to Canada for 6 weeks to take care of his affairs. The return was difficult again and I took half my available time to adjust to the time shift from Vancouver (WOW) and here we are with something I can submit that meets the basics, CRUD, AWS S3 image serving a PostgresQL DB and Stripe financials.
+
+I hope it passes cause I don't have anything left in the tank, tbh.
+
+This project consists of three apps - Listings, Checkout and Users. 
 The User's app handles everything related to the users. 
 The Listings app handles everything related to the listings including CRUD functionality for the administrator of the site who would be selling the cars.
 The API app was created to serialize the data and pass it to the front end. In particular the car models. On the front end, JavaScript makes a call to fetch all the models based on the user's selection of car make. 
