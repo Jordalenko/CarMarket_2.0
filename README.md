@@ -28,7 +28,7 @@ CarMarket is a full stack e-commerce project allowing users to post listings wit
     -   [Home](#Home)
         -   [Hero Section](#hero-section)
         -   [Search Form](#search-form)
-        -   [Recent Listings](#recent-listings)
+        -   [Listings](#listings)
         -   [Listing Card](#listing-card)
     -   [Listings Page](#listings-page)
     -   [Create Listing](#create-listing)
@@ -358,9 +358,23 @@ Testing documentation can be found [here.](./TESTING.md)
 ## Bugs
 
 |Bug|Status|
-| ---| ---|
+|---|---|
 
-|There were issues with implementing the AWS S3 bucket that required back and forth to integrate the listings images. I had to manually upload the listings images to the s3 bucket after creating the media folder and sub folder for listing images. | Sorted| There was an issue with the way some images were stored on the site. The field was a CharField not an ImageField. After being corrected and performing the above fix the images were served from the S3 bucket.| Sorted|There was a bug with message deletion confirmation prompt. You could select not to see the prompt again but then messages would not delete.|Sorted by removing prompt.|
+There were issues with implementing the AWS S3 bucket that required back and forth to integrate the listings images. I had to manually upload the listings images to the s3 bucket after creating the media folder and sub folder for listing images.
+
+Sorted
+
+There was an issue with the way some images were stored on the site. The field was a CharField not an ImageField. After being corrected and performing the above fix the images were served from the S3 bucket.
+
+Sorted
+
+There was a bug with message deletion confirmation prompt. You could select not to see the prompt again but then messages would not delete.
+
+Sorted by removing prompt.
+
+The password reset function fails due to a version conflict between Django and Python.
+
+Not sorted. I will not fix this as it will create other problems. I noted in the Readme section for password reset that I will not have this feature.
 
 
 ## Technologies And Languages
