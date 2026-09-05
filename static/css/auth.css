@@ -54,6 +54,34 @@
     outline: none;
 }
 
+.password-input-wrap {
+    position: relative;
+}
+
+.password-input-wrap input {
+    padding-right: 48px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #fff;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus {
+    background: rgba(255, 255, 255, 0.14);
+    outline: none;
+}
+
 .auth-field-wrap textarea {
     min-height: 120px;
     resize: vertical;
@@ -115,6 +143,17 @@
     color: #ffffff;
     transform: translateY(-1px);
     box-shadow: 0 8px 18px rgba(2, 6, 23, 0.24);
+}
+
+.auth-password-reset {
+    align-self: flex-start;
+    color: #bfdbfe;
+    font-weight: 700;
+}
+
+.auth-password-reset:hover,
+.auth-password-reset:focus {
+    color: #fff;
 }
 
 .auth-btn-primary:active,

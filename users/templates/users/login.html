@@ -57,7 +57,12 @@
 
                         <div class="auth-field-wrap">
                             <label for="{{ form.password.id_for_label }}" class="auth-label">Password</label>
-                            {{ form.password }}
+                            <div class="password-input-wrap">
+                                {{ form.password }}
+                                <button type="button" class="password-toggle" data-password-toggle="{{ form.password.id_for_label }}" aria-label="Show password" title="Show password">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
                             {% if form.password.errors %}<small class="auth-error">{{ form.password.errors|striptags }}</small>{% endif %}
                         </div>
 
@@ -65,10 +70,26 @@
                             <button type="submit" class="btn auth-btn-primary">Login</button>
                             <a href="{% url 'register' %}" class="btn auth-btn-secondary">Create Account</a>
                         </div>
+                        <a href="{% url 'account_reset_password' %}" class="auth-password-reset">Forgot password?</a>
                     </form>
                 {% endif %}
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block postloadjs %}
+<script>
+    document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
+        toggle.addEventListener('click', () => {
+            const password = document.getElementById(toggle.dataset.passwordToggle);
+            const isHidden = password.type === 'password';
+            password.type = isHidden ? 'text' : 'password';
+            toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+            toggle.setAttribute('title', isHidden ? 'Hide password' : 'Show password');
+            toggle.querySelector('i').className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+    });
+</script>
 {% endblock %}
