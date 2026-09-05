@@ -64,6 +64,17 @@ def _available_listing_filter(now):
     )
 
 
+def _sync_listing_sale_state(listing):
+    has_approved_sale = PurchaseItem.objects.filter(
+        listing=listing,
+        purchase__payment_status=Purchase.Status.PAID,
+        purchase__sale_status=Purchase.SaleStatus.APPROVED,
+    ).exists()
+    listing.is_sold = has_approved_sale
+    listing.checkout_reserved_until = None
+    listing.save(update_fields=["is_sold", "checkout_reserved_until"])
+
+
 def _ensure_purchase_notification(purchase):
     profile, _ = Profile.objects.get_or_create(
         user=purchase.buyer,
@@ -75,6 +86,7 @@ def _ensure_purchase_notification(purchase):
     )
     Notification.objects.get_or_create(
         profile=profile,
+        sender=None,
         subject="Purchase confirmed",
         message=(
             f"Your purchase {purchase.purchase_reference} is confirmed. "
@@ -94,6 +106,7 @@ def _ensure_sale_notification(purchase, subject, message):
     )
     Notification.objects.get_or_create(
         profile=profile,
+        sender=None,
         subject=subject,
         message=message,
     )
@@ -108,6 +121,7 @@ def _notify_admins(subject, message):
     for profile in admin_profiles:
         Notification.objects.get_or_create(
             profile=profile,
+            sender=None,
             subject=subject,
             message=message,
         )
@@ -344,34 +358,67 @@ def sale_reviews(request):
             Purchase,
             pk=request.POST.get("purchase_id"),
             payment_status=Purchase.Status.PAID,
-            sale_status=Purchase.SaleStatus.PENDING_REVIEW,
         )
         action = (request.POST.get("action") or "").strip().lower()
-        if action == "approve":
+        if action == "approve" and purchase.sale_status == Purchase.SaleStatus.PENDING_REVIEW:
             purchase.sale_status = Purchase.SaleStatus.APPROVED
             purchase.save(update_fields=["sale_status"])
+            for item in purchase.items.select_related("listing"):
+                item.listing.is_sold = True
+                item.listing.checkout_reserved_until = None
+                item.listing.save(
+                    update_fields=["is_sold", "checkout_reserved_until"]
+                )
             _ensure_sale_notification(
                 purchase,
                 "Sale approved",
                 f"Your purchase {purchase.purchase_reference} has been approved.",
             )
-        elif action == "reject":
+        elif action == "reject" and purchase.sale_status == Purchase.SaleStatus.PENDING_REVIEW:
             purchase.sale_status = Purchase.SaleStatus.REJECTED
             purchase.save(update_fields=["sale_status"])
             for item in purchase.items.select_related("listing"):
-                item.listing.is_sold = False
-                item.listing.checkout_reserved_until = None
-                item.listing.save(update_fields=["is_sold", "checkout_reserved_until"])
+                _sync_listing_sale_state(item.listing)
             _ensure_sale_notification(
                 purchase,
                 "Sale rejected",
                 f"Your purchase {purchase.purchase_reference} was rejected and the vehicle(s) were relisted. A refund must be arranged by the administrator.",
             )
+        elif action == "cancel" and purchase.sale_status == Purchase.SaleStatus.APPROVED:
+            purchase.sale_status = Purchase.SaleStatus.CANCELLED
+            purchase.save(update_fields=["sale_status"])
+            for item in purchase.items.select_related("listing"):
+                _sync_listing_sale_state(item.listing)
+            _ensure_sale_notification(
+                purchase,
+                "Sale cancelled",
+                f"Your purchase {purchase.purchase_reference} has been cancelled. A refund must be arranged by the administrator.",
+            )
+        elif action == "relist" and purchase.sale_status in (
+            Purchase.SaleStatus.REJECTED,
+            Purchase.SaleStatus.CANCELLED,
+        ):
+            blocked = any(
+                PurchaseItem.objects.filter(
+                    listing=item.listing,
+                    purchase__payment_status=Purchase.Status.PAID,
+                    purchase__sale_status=Purchase.SaleStatus.APPROVED,
+                ).exclude(purchase=purchase).exists()
+                for item in purchase.items.all()
+            )
+            if blocked:
+                messages.error(
+                    request,
+                    "This vehicle cannot be relisted because another approved sale exists.",
+                )
+            else:
+                for item in purchase.items.select_related("listing"):
+                    _sync_listing_sale_state(item.listing)
+                messages.success(request, "Vehicle relisted successfully.")
         return redirect("checkout:sale_reviews")
 
     purchases = Purchase.objects.filter(
         payment_status=Purchase.Status.PAID,
-        sale_status=Purchase.SaleStatus.PENDING_REVIEW,
     ).prefetch_related("items__listing__car_make", "items__listing__car_model")
     return render(request, "checkout/sale_reviews.html", {"purchases": purchases})
 

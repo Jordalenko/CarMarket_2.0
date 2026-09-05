@@ -270,20 +270,28 @@ def inbox_view(request):
                 return redirect(f"{request.path}?view={notification.id}")
 
             sender_name = profile.name or profile.username or request.user.username
-            recipients = Profile.objects.filter(
-                user__isnull=False,
-            ).filter(
-                Q(user__is_staff=True) | Q(user__is_superuser=True)
-            ).exclude(id=profile.id)
+            if request.user.is_staff or request.user.is_superuser:
+                recipients = Profile.objects.filter(
+                    id=notification.sender_id,
+                    user__isnull=False,
+                ).exclude(id=profile.id)
+            else:
+                recipients = Profile.objects.filter(
+                    user__isnull=False,
+                ).filter(
+                    Q(user__is_staff=True) | Q(user__is_superuser=True)
+                ).exclude(id=profile.id)
 
             if not recipients.exists():
-                messages.info(request, 'No admin recipients available for this reply.')
+                messages.info(request, 'No recipient is available for this reply.')
                 return redirect('inbox')
 
             reply_subject = f"Reply from {sender_name}: {notification.subject}"
             for recipient in recipients:
                 Notification.objects.create(
                     profile=recipient,
+                    sender=profile,
+                    thread_id=notification.thread_id,
                     subject=reply_subject[:255],
                     message=reply_text,
                     is_read=False,

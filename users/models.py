@@ -25,6 +25,14 @@ class Profile(models.Model):
 class Notification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="notifications")
+    sender = models.ForeignKey(
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_notifications",
+    )
+    thread_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
     subject = models.CharField(max_length=255)
     message = models.TextField()
     is_read = models.BooleanField(default=False)

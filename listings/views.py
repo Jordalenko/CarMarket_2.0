@@ -33,7 +33,7 @@ from django.contrib.messages import get_messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.files.storage import default_storage
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
@@ -41,6 +41,7 @@ from django.views.decorators.http import require_http_methods
 
 from users.models import Profile
 from users.models import Notification
+from checkout.models import Purchase
 from .models import CarMake, CarModel, Listing, FuelType, TransmissionType, EngineSize, SeatCount, TorqueValue, CarType
 
 
@@ -282,6 +283,23 @@ def _filtered_listings(request):
         "car_model",
         "car_type",
     ).filter(is_approved=True)
+    approved_sales = Purchase.objects.filter(
+        items__listing=OuterRef("pk"),
+        payment_status="paid",
+        sale_status="approved",
+    )
+    queryset = queryset.annotate(is_sale_approved=Exists(approved_sales))
+    if request.user.is_staff or request.user.is_superuser:
+        pass
+    elif request.user.is_authenticated:
+        purchaser_sale = approved_sales.filter(buyer=request.user)
+        queryset = queryset.annotate(
+            is_purchaser_sale=Exists(purchaser_sale),
+        ).filter(
+            Q(is_sale_approved=False) | Q(is_purchaser_sale=True)
+        )
+    else:
+        queryset = queryset.filter(is_sale_approved=False)
 
     q = (request.GET.get("q") or "").strip()
     car_make = (request.GET.get("car_make") or "").strip()
@@ -438,6 +456,9 @@ def _send_submission_notification(listing: Listing, status: str) -> None:
 
     Notification.objects.create(
         profile=profile,
+        sender=Profile.objects.filter(
+            user__is_staff=True,
+        ).first(),
         subject=subject,
         message=message,
     )

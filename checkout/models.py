@@ -23,6 +23,7 @@ class Purchase(models.Model):
         PENDING_REVIEW = "pending_review", "Pending admin review"
         APPROVED = "approved", "Sale approved"
         REJECTED = "rejected", "Sale rejected"
+        CANCELLED = "cancelled", "Sale cancelled"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     purchase_reference = models.CharField(

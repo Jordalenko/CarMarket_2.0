@@ -104,8 +104,18 @@ class Listing(models.Model):
 
     @property
     def sale_pending(self):
-        return self.is_sold or (
+        sale_approved = getattr(self, "is_sale_approved", None)
+        if sale_approved is None:
+            sale_approved = self.sale_approved
+        return (self.is_sold and not sale_approved) or (
             self.checkout_reserved_until is not None
             and self.checkout_reserved_until > timezone.now()
         )
+
+    @property
+    def sale_approved(self):
+        return self.purchase_items.filter(
+            purchase__payment_status="paid",
+            purchase__sale_status="approved",
+        ).exists()
     

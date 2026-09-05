@@ -313,3 +313,79 @@ class CheckoutPageTests(TestCase):
                 subject="Sale requires approval",
             ).exists()
         )
+
+    def test_cancelling_duplicate_sale_does_not_relist_genuine_sale(self):
+        admin = User.objects.create_user(
+            username="duplicate-admin",
+            password="test-password",
+            is_staff=True,
+        )
+        genuine_buyer = User.objects.create_user(
+            username="genuine-buyer",
+            password="test-password",
+        )
+        duplicate_buyer = User.objects.create_user(
+            username="duplicate-buyer",
+            password="test-password",
+        )
+        make = CarMake.objects.create(name="Nissan")
+        model = CarModel.objects.create(name="Leaf", car_make=make)
+        listing = Listing.objects.create(
+            car_make=make,
+            car_model=model,
+            price=18000,
+            is_approved=True,
+            is_sold=True,
+        )
+        genuine_purchase = Purchase.objects.create(
+            buyer=genuine_buyer,
+            payment_status=Purchase.Status.PAID,
+            sale_status=Purchase.SaleStatus.APPROVED,
+            vehicle_total=Decimal("18000.00"),
+            billing_name="Genuine Buyer",
+            billing_email="genuine@example.com",
+            billing_address="Billing address",
+            delivery_address="Delivery address",
+        )
+        duplicate_purchase = Purchase.objects.create(
+            buyer=duplicate_buyer,
+            payment_status=Purchase.Status.PAID,
+            sale_status=Purchase.SaleStatus.APPROVED,
+            vehicle_total=Decimal("18000.00"),
+            billing_name="Duplicate Buyer",
+            billing_email="duplicate@example.com",
+            billing_address="Billing address",
+            delivery_address="Delivery address",
+        )
+        PurchaseItem.objects.create(
+            purchase=genuine_purchase,
+            listing=listing,
+            agreed_price=Decimal("18000.00"),
+        )
+        PurchaseItem.objects.create(
+            purchase=duplicate_purchase,
+            listing=listing,
+            agreed_price=Decimal("18000.00"),
+        )
+
+        self.client.force_login(admin)
+        response = self.client.post(
+            reverse("checkout:sale_reviews"),
+            {"purchase_id": duplicate_purchase.id, "action": "cancel"},
+        )
+
+        self.assertRedirects(response, reverse("checkout:sale_reviews"))
+        duplicate_purchase.refresh_from_db()
+        listing.refresh_from_db()
+        self.assertEqual(
+            duplicate_purchase.sale_status,
+            Purchase.SaleStatus.CANCELLED,
+        )
+        self.assertTrue(listing.is_sold)
+
+        self.client.post(
+            reverse("checkout:sale_reviews"),
+            {"purchase_id": duplicate_purchase.id, "action": "relist"},
+        )
+        listing.refresh_from_db()
+        self.assertTrue(listing.is_sold)

@@ -20,11 +20,18 @@
           {% for item in purchase.items.all %}
             <p>{{ item.listing.car_make }} {{ item.listing.car_model }}: €{{ item.agreed_price }}</p>
           {% endfor %}
+          <p>Status: {{ purchase.get_sale_status_display }}</p>
           <form method="post">
             {% csrf_token %}
             <input type="hidden" name="purchase_id" value="{{ purchase.id }}">
-            <button type="submit" name="action" value="approve" class="btn-pill btn-pill-save">Approve sale</button>
-            <button type="submit" name="action" value="reject" class="btn-pill btn-pill-delete">Reject and relist</button>
+            {% if purchase.sale_status == "pending_review" %}
+              <button type="submit" name="action" value="approve" class="btn-pill btn-pill-save">Approve sale</button>
+              <button type="submit" name="action" value="reject" class="btn-pill btn-pill-delete">Reject and relist</button>
+            {% elif purchase.sale_status == "approved" %}
+              <button type="submit" name="action" value="cancel" class="btn-pill btn-pill-delete">Cancel sale</button>
+            {% elif purchase.sale_status == "rejected" or purchase.sale_status == "cancelled" %}
+              <button type="submit" name="action" value="relist" class="btn-pill btn-pill-save">Relist vehicle</button>
+            {% endif %}
           </form>
         </article>
       {% empty %}

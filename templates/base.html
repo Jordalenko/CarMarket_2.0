@@ -9,6 +9,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="preload" as="image" href="https://res.cloudinary.com/dutukkel2/image/upload/v1776968818/CarMarket_Cover_Pic_v5_ttnjia.webp">
     {% endblock %}
     
     {% block extra_meta %} 
@@ -132,13 +133,19 @@
     </div>
     <div id="delivery-banner" class="row text-center">
       <div class="col bg-black text-white">
-        <h4 class="logo-font my-1">Free delivery on orders over £20,000{{ free_shipping_threshold }}!</h4>
+        <h4 class="logo-font my-1">Free delivery on orders over €20,000{{ free_shipping_threshold }}!</h4>
       </div>
     </div>
     </header>
 
     {% if messages %}
-        <div class="message-container"></div>
+      <div class="message-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }}" role="alert" data-auto-dismiss="4000">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
 
     <main class="site-content">
@@ -163,6 +170,27 @@
     {% endblock %}
 
     <script>
+      document.querySelectorAll('[data-auto-dismiss]').forEach((message) => {
+        window.setTimeout(() => {
+          message.classList.add('is-dismissing');
+          window.setTimeout(() => message.remove(), 350);
+        }, Number(message.dataset.autoDismiss));
+      });
+    </script>
+
+    <script>
+      const positionMessagesBelowHeader = () => {
+        const header = document.querySelector('header.fixed-top');
+        const messageContainer = document.querySelector('.message-container');
+
+        if (header && messageContainer) {
+          messageContainer.style.top = `${header.getBoundingClientRect().height + 8}px`;
+        }
+      };
+
+      positionMessagesBelowHeader();
+      window.addEventListener('resize', positionMessagesBelowHeader);
+
       document.querySelectorAll('[data-listing-carousel]').forEach((carousel) => {
         const slides = Array.from(carousel.querySelectorAll('.listing-carousel-slide'));
         let activeIndex = 0;

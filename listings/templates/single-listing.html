@@ -77,7 +77,9 @@
 
             {% if request.user.is_authenticated %}
                 <div class="listing-card-actions">
-                {% if listing.sale_pending %}
+                {% if listing.sale_approved %}
+                  <span class="btn-pill btn-pill-cancel" aria-label="Sold">Sold</span>
+                {% elif listing.sale_pending %}
                   <span class="btn-pill btn-pill-cancel" aria-label="Sale pending">Sale pending</span>
                 {% elif listing.id in selected_vehicle_ids %}
                   <form method="post" action="{% url 'unselect_vehicle' listing.id %}">

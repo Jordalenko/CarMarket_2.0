@@ -37,7 +37,7 @@
               <div class="listing-image-box listing-image-carousel" data-listing-carousel>
                 {% for image_url in listing.image_urls %}
                   <div class="listing-carousel-slide{% if forloop.first %} is-active{% endif %}"{% if not forloop.first %} hidden{% endif %}>
-                    <a href="{% url 'single_listing' listing.id %}" aria-label="View {{ listing.car_make }} {{ listing.car_model }} details">
+                    <a href="{% if listing.is_sale_approved %}#{% else %}{% url 'single_listing' listing.id %}{% endif %}"{% if listing.is_sale_approved %} aria-label="{{ listing.car_make }} {{ listing.car_model }} sold"{% else %} aria-label="View {{ listing.car_make }} {{ listing.car_model }} details"{% endif %}>
                       <img src="{{ image_url }}" alt="{{ listing.car_make }} {{ listing.car_model }} image {{ forloop.counter }}">
                     </a>
                   </div>
@@ -51,7 +51,7 @@
               <div class="listing-card-body">
                 <h3>
                   {{ listing.car_make }} {{ listing.car_model }}
-                  {% if listing.is_approved %}
+                  {% if listing.is_approved and not listing.is_sale_approved %}
                     <span class="approval-badge">Approved</span>
                   {% endif %}
                 </h3>
@@ -62,14 +62,18 @@
 
                 <!-- View / Edit / Delete action buttons -->
                 <div class="listing-card-actions">
-                  <button
-                    type="button"
-                    class="btn-pill btn-pill-view"
-                    data-toggle="modal"
-                    data-target="#listingModal-{{ listing.id }}"
-                    aria-label="View full details for {{ listing.car_make }} {{ listing.car_model }}">
-                    View
-                  </button>
+                  {% if listing.is_sale_approved %}
+                    <a href="#" class="btn-pill btn-pill-cancel" aria-label="{{ listing.car_make }} {{ listing.car_model }} sold">Sold</a>
+                  {% else %}
+                    <button
+                      type="button"
+                      class="btn-pill btn-pill-view"
+                      data-toggle="modal"
+                      data-target="#listingModal-{{ listing.id }}"
+                      aria-label="View full details for {{ listing.car_make }} {{ listing.car_model }}">
+                      View
+                    </button>
+                  {% endif %}
                   {% if request.user.is_authenticated %}
                     {% if listing.owner and listing.owner.user == request.user %}
                       <a href="{% url 'edit_listing' listing.id %}" class="btn-pill btn-pill-edit">Edit</a>
@@ -88,7 +92,7 @@
                   <div class="modal-header vehicle-modal-header">
                     <h5 class="modal-title" id="listingModalLabel-{{ listing.id }}">
                       {{ listing.car_make }} {{ listing.car_model }}
-                      {% if listing.is_approved %}
+                      {% if listing.is_approved and not listing.is_sale_approved %}
                         <span class="approval-badge">Approved</span>
                       {% endif %}
                     </h5>
@@ -133,6 +137,8 @@
                           <input type="hidden" name="next" value="{{ request.get_full_path }}">
                           <button type="submit" class="btn-pill btn-pill-delete">Remove from Bag</button>
                         </form>
+                      {% elif listing.is_sale_approved %}
+                        <span class="btn-pill btn-pill-cancel" aria-label="Sold">Sold</span>
                       {% elif listing.sale_pending %}
                         <span class="btn-pill btn-pill-cancel" aria-label="Sale pending">Sale pending</span>
                       {% else %}

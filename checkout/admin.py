@@ -29,3 +29,20 @@ class PurchaseAdmin(admin.ModelAdmin):
         "stripe_payment_intent_id",
     )
     inlines = [PurchaseItemInline]
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        if form.instance.sale_status == Purchase.SaleStatus.APPROVED:
+            for item in form.instance.items.select_related("listing"):
+                item.listing.is_sold = True
+                item.listing.checkout_reserved_until = None
+                item.listing.save(
+                    update_fields=["is_sold", "checkout_reserved_until"]
+                )
+        elif form.instance.sale_status == Purchase.SaleStatus.REJECTED:
+            for item in form.instance.items.select_related("listing"):
+                item.listing.is_sold = False
+                item.listing.checkout_reserved_until = None
+                item.listing.save(
+                    update_fields=["is_sold", "checkout_reserved_until"]
+                )
