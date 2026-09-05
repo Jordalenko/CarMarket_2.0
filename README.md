@@ -166,6 +166,8 @@ Overall, this color scheme creates a professional and user-friendly environment 
 ### Database Schema
 ![database schema](https://res.cloudinary.com/dutukkel2/image/upload/v1776969191/CarMarket_db_schema_v4_tfqdir.png)
 
+Note: During testing I discovered several additions to the purchase model were required to allow admin control. Those are not detailed here as I had run out of time. The additions were cancellation, approval, refjection and relist.
+
 #### Models
 1. Allauth User Model
 

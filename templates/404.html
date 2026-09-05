@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_title %}- Page Not Found{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=404">
+{% endblock %}
+
+{% block content %}
+  <div class="listings-app checkout-page">
+    <main class="page-shell">
+      <section class="checkout-card">
+        <h1>Page not found</h1>
+        <p>The page you requested does not exist.</p>
+        <a href="{% url 'home' %}" class="btn btn-blue text-white">Return home</a>
+      </section>
+    </main>
+  </div>
+{% endblock %}
